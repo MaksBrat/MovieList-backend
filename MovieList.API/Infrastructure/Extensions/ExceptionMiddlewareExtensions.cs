@@ -1,6 +1,6 @@
 ﻿using MovieList.Common.Utility;
 
-namespace MovieList
+namespace MovieList.API.Infrastructure.Extensions
 {
     public static class ExceptionMiddlewareExtensions
     {

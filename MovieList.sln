@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.API", "MovieList\MovieList.API.csproj", "{CB53B73A-3DEE-4F88-B671-574706CA1A2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.API", "MovieList.API\MovieList.API.csproj", "{CB53B73A-3DEE-4F88-B671-574706CA1A2D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.DAL", "MovieList.DAL\MovieList.DAL.csproj", "{9ED38733-7064-4060-B218-25448944636C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.Domain", "MovieList.Domain\MovieList.Domain.csproj", "{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.Common", "MovieList.Common\MovieList.Common.csproj", "{F1066FBF-083F-4A37-9A30-684DB561BB3E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.Core", "MovieList.Services\MovieList.Core.csproj", "{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}"
 EndProject
@@ -31,10 +29,6 @@ Global
 		{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F1066FBF-083F-4A37-9A30-684DB561BB3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F1066FBF-083F-4A37-9A30-684DB561BB3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F1066FBF-083F-4A37-9A30-684DB561BB3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F1066FBF-083F-4A37-9A30-684DB561BB3E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}.Release|Any CPU.ActiveCfg = Release|Any CPU

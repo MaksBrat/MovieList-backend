@@ -16,7 +16,7 @@ namespace MovieList.Core.Services
         public async Task<string> SaveFileAsync(IFormFile file, string destinationFolder)
         {
             string path = Path.Combine(destinationFolder, file.FileName);
-            using (var fileStream = new FileStream(Path.Combine(_appEnvironment.WebRootPath, path), FileMode.Create))
+            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
             }
