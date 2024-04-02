@@ -1,6 +1,4 @@
-﻿using MovieList.Resources.Error;
-using MovieList.Resources.Logger;
-using Microsoft.AspNetCore.Http;
+﻿using MovieList.Domain.ApiError;
 using System.Net;
 
 namespace MovieList.Common.Utility
@@ -8,9 +6,9 @@ namespace MovieList.Common.Utility
     public class GlobalErrorHandlingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILoggerManager _logger;
+        private readonly ILogger _logger;
 
-        public GlobalErrorHandlingMiddleware(RequestDelegate next, ILoggerManager logger)
+        public GlobalErrorHandlingMiddleware(RequestDelegate next, ILogger<GlobalErrorHandlingMiddleware> logger)
         {
             _logger = logger;
             _next = next;
@@ -33,11 +31,11 @@ namespace MovieList.Common.Utility
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await context.Response.WriteAsync(new ErrorDetails()
+            await context.Response.WriteAsync(new ApiError()
             {
-                StatusCode = context.Response.StatusCode,
-                Message = "Internal Server Error from the custom middleware."
-            }.ToString());
+                HttpStatusCode = context.Response.StatusCode,
+                Message = $"Internal Server Error from the custom middleware: {ex.Message}"
+            }.ToString()!);
         }
     }
 }

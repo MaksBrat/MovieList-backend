@@ -1,19 +1,18 @@
 ﻿using MovieList.DAL.Interfaces;
 using MovieList.Domain.Entity.Account;
-using MovieList.Domain.Response;
 using MovieList.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using MovieList.Domain.ResponseModels.Profile;
-using MovieList.Common.Extentions;
 using MovieList.Domain.Entity;
-using Microsoft.Extensions.Configuration;
-using Azure.Storage.Blobs;
 using MovieList.Domain.Entity.Profile;
 using MovieList.Domain.RequestModels.Profile;
-using Microsoft.AspNetCore.Hosting;
+using MovieList.Common.Constants;
+using MovieList.Services.Exceptions;
+using MovieList.Services.Exceptions.Base;
+using MovieList.Core.Interfaces;
 
 namespace MovieList.Services.Services
 {
@@ -21,155 +20,119 @@ namespace MovieList.Services.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _appEnvironment;
+        private readonly IFileService _fileService;
 
-        public ProfileService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IWebHostEnvironment appEnvironment)
+        public ProfileService(IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _configuration = configuration;
-            _appEnvironment = appEnvironment;
+            _fileService = fileService;
         }
 
-        public async Task<IBaseResponse<ProfileResponse>> Get(int UserId)
+        public async Task<ProfileResponse> Get(int userId)
         {
-            var profile = await _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefaultAsync(
-                predicate: x => x.UserId == UserId,
-                include: i => i
-                    .Include(x => x.FileModel));
-
-            var response = _mapper.Map<ProfileResponse>(profile);
-
-            return new BaseResponse<ProfileResponse>()
-            {
-                Data = response,
-                StatusCode = HttpStatusCode.OK
-            };
-        }
-
-        public async Task<IBaseResponse<ProfileResponse>> Create(ApplicationUser user)
-        {
-            var profile = await _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefaultAsync(
-            predicate: x => x.Id == user.Id);
-
-            if (profile != null)
-            {
-                return new BaseResponse<ProfileResponse>
-                {
-                    Description = "Profile already exists",
-                    StatusCode = HttpStatusCode.OK
-                };
-            }
-
-            var file = new FileModel { Name = "user-default-image.png", Path = _configuration["BlobStorage:UserDefaultImageUrl"] };
-
-            _unitOfWork.GetRepository<FileModel>().Insert(file);
-            _unitOfWork.SaveChanges();
-
-            profile = new UserProfile
-            {
-                Name = $"User{UserIdExtensions.GetId:00000000}",
-                RegistratedAt = DateTime.UtcNow,
-                UserId = user.Id,
-                FileModelId = file.Id
-            };
-
-            _unitOfWork.GetRepository<UserProfile>().Insert(profile);
-            _unitOfWork.SaveChanges();
-
-            var response = _mapper.Map<ProfileResponse>(profile);
-
-            return new BaseResponse<ProfileResponse>
-            {
-                Data = response,
-                StatusCode = HttpStatusCode.OK
-            };
-        }
-
-        public IBaseResponse<ProfileResponse> Edit(ProfileRequest model, int userId)
-        {
-            var profile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
+            var userProfile = await _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefaultAsync(
                 predicate: x => x.UserId == userId,
                 include: i => i
                     .Include(x => x.FileModel));
 
-            if (profile == null)
+            if (userProfile == null)
             {
-                return new BaseResponse<ProfileResponse>
-                {
-                    Description = "Profile not found",
-                    StatusCode = HttpStatusCode.Found,
-                };
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                     $"Profile with Id: {userId} was not found.");
             }
 
-            _mapper.Map(model, profile);
+            var response = _mapper.Map<ProfileResponse>(userProfile);
 
-            _unitOfWork.GetRepository<UserProfile>().Update(profile);
-            _unitOfWork.SaveChanges();
-
-            var response = _mapper.Map<ProfileResponse>(profile);
-
-            return new BaseResponse<ProfileResponse>
-            {
-                Data = response,
-                StatusCode = HttpStatusCode.OK,
-            };         
+            return response;
         }
 
-        public async Task<IBaseResponse<ProfileResponse>> ChangeAvatar(IFormFile avatar, int userId)
+        public async Task<ProfileResponse> Create(ApplicationUser user)
+        {
+            var userProfile = await _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefaultAsync(
+                predicate: x => x.Id == user.Id);
+
+            if (userProfile != null)
+            {
+                throw new CustomizedResponseException((int)HttpStatusCode.UnprocessableEntity, ErrorIdConstans.UnprocessableEntity,
+                     $"Profile with Id: {user.Id} already exists");
+            }
+
+            var maxId = await _unitOfWork.GetRepository<UserProfile>().MaxAsync(x => x.Id);
+
+            userProfile = new UserProfile
+            {
+                Name = $"User{maxId + 1:00000000}",
+                RegistratedAt = DateTime.UtcNow,
+                UserId = user.Id,
+                FileModel = new FileModel { Name = "user-default-image.png", Path = ProfileConstants.DEFAULT_PROFILE_IMAGE_PATH }
+            };
+
+            _unitOfWork.GetRepository<UserProfile>().Insert(userProfile);
+            _unitOfWork.SaveChanges();
+
+            var response = _mapper.Map<ProfileResponse>(userProfile);
+
+            return response;
+        }
+
+        public ProfileResponse Edit(ProfileRequest model, int userId)
+        {
+            var userProfile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
+                predicate: x => x.UserId == userId,
+                include: i => i
+                    .Include(x => x.FileModel));
+
+            if (userProfile == null)
+            {
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                     $"Profile with Id: {userId} was not found. Can't edit profile.");
+            }
+
+            _mapper.Map(model, userProfile);
+
+            _unitOfWork.GetRepository<UserProfile>().Update(userProfile);
+            _unitOfWork.SaveChanges();
+
+            var response = _mapper.Map<ProfileResponse>(userProfile);
+
+            return response;         
+        }
+
+        public async Task<ProfileResponse> ChangeAvatar(IFormFile avatar, int userId)
         {
             if (avatar == null)
             {
-                return new BaseResponse<ProfileResponse>
-                {
-                    Description = "Please upload your avatar",
-                    StatusCode = HttpStatusCode.BadRequest,
-                };
+                throw new CustomizedResponseException((int)HttpStatusCode.UnprocessableEntity, ErrorIdConstans.UnprocessableEntity,
+                     "Please provide avatar.");
             }
 
-            var profile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
+            var userProfile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
                 predicate: x => x.UserId == userId,
                 include: i => i
                     .Include(x => x.FileModel));
 
-            if (profile == null)
+            if (userProfile == null)
             {
-                return new BaseResponse<ProfileResponse>
-                {
-                    Description = "Profile not found",
-                    StatusCode = HttpStatusCode.NotFound,
-                };
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                     $"Profile with Id: {userId} was not found. Can't change avatar.");
             }
 
-            if (!string.IsNullOrEmpty(profile.FileModel?.Path))
+            if (!string.IsNullOrEmpty(userProfile.FileModel?.Path) && userProfile.FileModel?.Path != ProfileConstants.DEFAULT_PROFILE_IMAGE_PATH)
             {
-                var previousAvatarPath = Path.Combine(_appEnvironment.WebRootPath, profile.FileModel.Path.TrimStart('/'));
-
-                if (File.Exists(previousAvatarPath))
-                {
-                    File.Delete(previousAvatarPath);
-                }
+                _fileService.DeleteFile(userProfile.FileModel?.Path);
             }
 
-            string path = "/Images/" + avatar.FileName;
-            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-            {
-                await avatar.CopyToAsync(fileStream);
-            }
+            string path = await _fileService.SaveFileAsync(avatar, ProfileConstants.IMAGE_FOLDER_PATH);
 
-            profile.FileModel.Path = path;
+            userProfile.FileModel.Path = path;
 
-            _unitOfWork.GetRepository<FileModel>().Update(profile.FileModel);
+            _unitOfWork.GetRepository<FileModel>().Update(userProfile.FileModel);
             _unitOfWork.SaveChanges();
 
-            var response = _mapper.Map<ProfileResponse>(profile);
+            var response = _mapper.Map<ProfileResponse>(userProfile);
 
-            return new BaseResponse<ProfileResponse>
-            {
-                Data = response,
-                StatusCode = HttpStatusCode.OK,
-            };   
+            return response;   
         }
     }
 }

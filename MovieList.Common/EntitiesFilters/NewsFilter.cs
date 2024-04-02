@@ -11,6 +11,5 @@ namespace MovieList.Common.EntitiesFilters
         
             ApplyOrderByFilter(OrderBy, AscOrDesc);
         }
-
     }
 }

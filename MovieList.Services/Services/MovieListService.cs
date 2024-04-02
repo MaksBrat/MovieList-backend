@@ -4,10 +4,9 @@ using MovieList.DAL.Interfaces;
 using MovieList.Domain.Entity.MovieList;
 using MovieList.Domain.Enums;
 using MovieList.Domain.RequestModels.MovieListItem;
-using MovieList.Domain.Response;
 using MovieList.Domain.ResponseModels.MovieList;
+using MovieList.Services.Exceptions;
 using MovieList.Services.Interfaces;
-using System.Net;
 
 namespace MovieList.Services.Services
 {
@@ -22,7 +21,7 @@ namespace MovieList.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<IBaseResponse<List<MovieListItemResponse>>> Get(int userId)
+        public async Task<List<MovieListItemResponse>> Get(int userId)
         {
             var movieList = await _unitOfWork.GetRepository<MovieListItem>().GetAllAsync(
                 predicate: x => x.ProfileId == userId,
@@ -31,105 +30,68 @@ namespace MovieList.Services.Services
                         .ThenInclude(x => x.MovieGenres)
                             .ThenInclude(x => x.Genre));
 
+            if (movieList == null)
+            {
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                    $"Movie list for user with id: {userId} was not found.");
+            }
+
             var movieListResponse = _mapper.Map<List<MovieListItemResponse>>(movieList);
 
-            return new BaseResponse<List<MovieListItemResponse>>()
-            {
-                Data = movieListResponse,
-                StatusCode = HttpStatusCode.OK
-            };
+            return movieListResponse;
         }
 
-        public async Task<IBaseResponse<bool>> IsMovieInUserList(int movieId, int userId)
+        public async Task<bool> IsMovieInUserList(int movieId, int userId)
         {
             var movieListItem = await _unitOfWork.GetRepository<MovieListItem>().GetFirstOrDefaultAsync(
                 predicate: x => x.ProfileId == userId && x.MovieId == movieId);
 
-            if(movieListItem == null)
-            {
-                return new BaseResponse<bool>()
-                {
-                    Data = false,
-                    StatusCode = HttpStatusCode.OK
-                };
-            }
-
-            return new BaseResponse<bool>()
-            {
-                Data = true,
-                StatusCode = HttpStatusCode.OK
-            };
+            return movieListItem != null;
         }
 
-        public IBaseResponse<bool> Add(int userId, int MovieId)
+        public void Add(int userId, int MovieId)
         {
-            var userMovie = new MovieListItem
+            var movieListItem = new MovieListItem
             {
                 MovieId = MovieId,
                 ProfileId = userId,
                 MovieStatus = MovieListItemStatus.WantToWatch
             };
 
-            _unitOfWork.GetRepository<MovieListItem>().Insert(userMovie);
+            _unitOfWork.GetRepository<MovieListItem>().Insert(movieListItem);
             _unitOfWork.SaveChanges();
-
-            return new BaseResponse<bool>
-            {
-                Data = true,
-                StatusCode = HttpStatusCode.OK
-            };
         }
 
-        public IBaseResponse<bool> Delete(int movieId, int userId)
+        public void Update(MovielistItemRequest model)
         {
-            var MovieInList = _unitOfWork.GetRepository<MovieListItem>().GetFirstOrDefault(
-                predicate: x => x.Movie.Id == movieId && x.ProfileId == userId);
-
-            if (MovieInList == null)
-            {
-                return new BaseResponse<bool>()
-                {
-                    Data = false,
-                    Description = "Movie in list is not found",
-                    StatusCode = HttpStatusCode.NotFound
-                };
-            }
-
-            _unitOfWork.GetRepository<MovieListItem>().Delete(MovieInList.Id);
-            _unitOfWork.SaveChanges();
-
-            return new BaseResponse<bool>()
-            {
-                Data = true,
-                StatusCode = HttpStatusCode.OK
-            };
-        }
-
-        public IBaseResponse<bool> Update(MovielistItemRequest model)
-        {
-            var movie = _unitOfWork.GetRepository<MovieListItem>().GetFirstOrDefault(
+            var movieListItem = _unitOfWork.GetRepository<MovieListItem>().GetFirstOrDefault(
                 predicate: x => x.Id == model.Id);
 
-            if (movie == null)
+            if (movieListItem == null)
             {
-                return new BaseResponse<bool>()
-                {
-                    Data = false,
-                    Description = "Movie in list is not found",
-                    StatusCode = HttpStatusCode.NotFound
-                };
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                    $"Movie list item with id: {model.Id} and movieId: {model.Movie.Id} was not found. Can't update movie list item");
             }
 
-            _mapper.Map(model, movie);
+            _mapper.Map(model, movieListItem);
 
-            _unitOfWork.GetRepository<MovieListItem>().Update(movie);
+            _unitOfWork.GetRepository<MovieListItem>().Update(movieListItem);
             _unitOfWork.SaveChanges();
-
-            return new BaseResponse<bool>()
-            {
-                Data = true,
-                StatusCode = HttpStatusCode.OK
-            };
         }
+
+        public void Delete(int movieId, int userId)
+        {
+            var movieListItem = _unitOfWork.GetRepository<MovieListItem>().GetFirstOrDefault(
+                predicate: x => x.Movie.Id == movieId && x.ProfileId == userId);
+
+            if (movieListItem == null)
+            {
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                    $"Movie list item with userId: {userId} and movieId: {movieId} was not found. Can't delete movie from list.");
+            }
+
+            _unitOfWork.GetRepository<MovieListItem>().Delete(movieListItem.Id);
+            _unitOfWork.SaveChanges();
+        }        
     }
 }

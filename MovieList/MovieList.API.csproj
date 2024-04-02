@@ -13,7 +13,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.4.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -36,8 +35,7 @@
     <ProjectReference Include="..\MovieList.Common\MovieList.Common.csproj" />
     <ProjectReference Include="..\MovieList.DAL\MovieList.DAL.csproj" />
     <ProjectReference Include="..\MovieList.Domain\MovieList.Domain.csproj" />
-    <ProjectReference Include="..\MovieList.Resources\MovieList.Resources.csproj" />
-    <ProjectReference Include="..\MovieList.Services\MovieList.Services.csproj" />
+    <ProjectReference Include="..\MovieList.Services\MovieList.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

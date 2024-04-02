@@ -188,5 +188,69 @@ namespace MovieList.DAL.Repository
         public void Delete(TEntity entity) => _dbSet.Remove(entity);
 
         public void DeleteRange(List<TEntity> entities) => _dbSet.RemoveRange(entities);
+
+        #region Aggregations
+
+        public T? Max<T>(
+            Expression<Func<TEntity, T>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null) =>
+            predicate is null
+                ? _dbSet.Max(selector)
+                : _dbSet.Where(predicate).Max(selector);
+
+        public Task<T> MaxAsync<T>(
+            Expression<Func<TEntity, T>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null,
+            CancellationToken cancellationToken = default) =>
+            predicate is null
+                ? _dbSet.MaxAsync(selector, cancellationToken)
+                : _dbSet.Where(predicate).MaxAsync(selector, cancellationToken);
+
+        public T? Min<T>(
+            Expression<Func<TEntity, T>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null) =>
+            predicate is null
+                ? _dbSet.Min(selector)
+                : _dbSet.Where(predicate).Min(selector);
+
+        public Task<T> MinAsync<T>(
+            Expression<Func<TEntity, T>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null,
+            CancellationToken cancellationToken = default) =>
+            predicate is null
+                ? _dbSet.MinAsync(selector, cancellationToken)
+                : _dbSet.Where(predicate).MinAsync(selector, cancellationToken);
+
+        public decimal Average(
+            Expression<Func<TEntity, decimal>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null) =>
+            predicate is null
+                ? _dbSet.Average(selector)
+                : _dbSet.Where(predicate).Average(selector);
+
+        public Task<decimal> AverageAsync(
+            Expression<Func<TEntity, decimal>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null,
+            CancellationToken cancellationToken = default) =>
+            predicate is null
+                ? _dbSet.AverageAsync(selector, cancellationToken)
+                : _dbSet.Where(predicate).AverageAsync(selector, cancellationToken);
+
+        public decimal Sum(
+            Expression<Func<TEntity, decimal>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null) =>
+            predicate is null
+                ? _dbSet.Sum(selector)
+                : _dbSet.Where(predicate).Sum(selector);
+
+        public Task<decimal> SumAsync(
+            Expression<Func<TEntity, decimal>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null,
+            CancellationToken cancellationToken = default) =>
+            predicate is null
+                ? _dbSet.SumAsync(selector, cancellationToken)
+                : _dbSet.Where(predicate).SumAsync(selector, cancellationToken);
+
+        #endregion
     }
 }

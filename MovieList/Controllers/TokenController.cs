@@ -1,12 +1,12 @@
 ﻿using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using MovieList.Domain.RequestModels.Account;
+using MovieList.Controllers.Base;
 
 namespace MovieList.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class TokenController : ControllerBase
+    public class TokenController : BaseController
     {
         private readonly IJWTService _jwtService;
 
@@ -19,11 +19,8 @@ namespace MovieList.Controllers
         public async Task<IActionResult> Refresh(TokenRequest model)
         {
             var response = await _jwtService.RefreshToken(model);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return BadRequest("Invalid client request");
+
+            return Ok(response);
         }
     }
 }

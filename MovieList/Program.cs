@@ -7,11 +7,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MovieList.Services;
 using MovieList.Hubs;
-using NLog;
+using Microsoft.AspNetCore.Identity;
+using MovieList.Domain.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
+
 //Initialize
 builder.Services.InitializeRepositories();
 builder.Services.InitializeServices();
@@ -20,16 +22,27 @@ builder.Services.AddHttpContextAccessor();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+var emailConfig = builder.Configuration
+        .GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+
 //Logging
-LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 //Database
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
         option.UseSqlServer(connection));
 
 //Identity
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-        .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(opt =>
+{
+    opt.SignIn.RequireConfirmedEmail = true;
+    opt.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
@@ -100,7 +113,7 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieList API V1");
 });
 
 app.MapControllers();

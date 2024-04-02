@@ -1,82 +1,58 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MovieList.Common.Extentions;
+using MovieList.Controllers.Base;
 using MovieList.Domain.RequestModels.MovieListItem;
 using MovieList.Services.Interfaces;
-using System.Net;
 
 namespace MovieList.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class MovieListController : ControllerBase
+    public class MovieListController : BaseController
     {
         private readonly IMovieListService _movieListService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private int _userId;
-
-        public MovieListController(IMovieListService movieListService,
-            IHttpContextAccessor httpContextAccessor)
+        public MovieListController(IMovieListService movieListService)
         {
             _movieListService = movieListService;
-            _httpContextAccessor = httpContextAccessor;
-
-            _userId = _httpContextAccessor.HttpContext.User?.GetUserId() ?? 0;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            var response = await _movieListService.Get(_userId);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            var response = await _movieListService.Get(UserId);
+
+            return Ok(response);
         }
 
-        [HttpGet("isMovieInUserList/{movieId}")]
+        [HttpGet("is-movie-in-user-list/{movieId}")]
         public async Task<IActionResult> IsMoveInUserList(int movieId)
         {
-            var response = await _movieListService.IsMovieInUserList(movieId, _userId);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            var response = await _movieListService.IsMovieInUserList(movieId, UserId);
+
+            return Ok(response);
         }
 
         [HttpPost]
         public IActionResult Add(int movieId)
         {
-            var response = _movieListService.Add(_userId, movieId);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            _movieListService.Add(UserId, movieId);
+
+            return Ok();
         }
 
         [HttpDelete("{movieId}")]
         public IActionResult DeleteMovieFromList(int movieId)
         {
-            var response = _movieListService.Delete(movieId, _userId);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+             _movieListService.Delete(movieId, UserId);
+
+            return Ok();
         }
 
         [HttpPut]
-        public IActionResult ChangeMovieStatus(MovielistItemRequest model)
+        public IActionResult Update(MovielistItemRequest model)
         {
-            var response = _movieListService.Update(model);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            _movieListService.Update(model);
+
+            return Ok();
         }
     }
 }

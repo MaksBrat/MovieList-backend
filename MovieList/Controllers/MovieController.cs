@@ -2,14 +2,13 @@
 using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using MovieList.Domain.RequestModels.Movie;
+using MovieList.Controllers.Base;
 
 namespace MovieList.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class MovieController : ControllerBase
+    public class MovieController : BaseController
     {   
         private readonly IMovieService _movieService;
 
@@ -22,58 +21,43 @@ namespace MovieList.Controllers
         public IActionResult Get(int id)
         {
             var response = _movieService.Get(id);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+
+            return Ok(response);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] MovieFilterRequest filterRequest)
         {
             var response = await _movieService.GetAll(filterRequest);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+
+            return Ok(response);
         }
 
         [Authorize]
         [HttpPost]
         public IActionResult Create(MovieRequest model)
         {
-            var response = _movieService.Create(model);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            _movieService.Create(model);
+
+            return Ok();
         }     
 
         [Authorize]
         [HttpPut]
         public async Task<IActionResult> EditAsync(MovieRequest model)
         {
-            var response = await _movieService.EditAsync(model);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            await _movieService.EditAsync(model);
+
+            return Ok();
         }
 
         [Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var response = _movieService.Delete(id);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            _movieService.Delete(id);
+
+            return Ok();
         }
     }
 }

@@ -1,15 +1,14 @@
 ﻿using MovieList.DAL.Interfaces;
 using MovieList.Domain.Entity.MovieNews;
 using MovieList.Domain.RequestModels.MovieNews;
-using MovieList.Domain.Response;
 using MovieList.Domain.ResponseModels.MovieNews;
 using MovieList.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using System.Net;
 using MovieList.Common.EntitiesFilters;
 using MovieList.Domain.RequestModels.EntitiesFilters;
 using MovieList.Domain.Entity.Profile;
+using MovieList.Services.Exceptions;
 
 namespace MovieList.Services.Services
 {
@@ -24,31 +23,7 @@ namespace MovieList.Services.Services
             _mapper = mapper;
         }
 
-        public IBaseResponse<NewsResponse> Create(NewsRequest model, int userId)
-        {
-            var userProfile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
-                    predicate: x => x.UserId == userId,
-                    include: i => i
-                        .Include(x => x.FileModel));
-
-            var news = _mapper.Map<News>(model);
-            news.AuthorId = userId;
-
-            _unitOfWork.GetRepository<News>().Insert(news);
-            _unitOfWork.SaveChanges();
-             
-            var response = _mapper.Map<NewsResponse>(news);
-            response.Author = userProfile.Name;
-            response.AvatarUrl = userProfile.FileModel.Path;
-
-            return new BaseResponse<NewsResponse>
-            {
-                Data = response,
-                StatusCode = HttpStatusCode.OK
-            };
-        }
-
-        public IBaseResponse<NewsResponse> Get(int id)
+        public NewsResponse Get(int id)
         {
             var news = _unitOfWork.GetRepository<News>().GetFirstOrDefault(
             predicate: x => x.Id == id,
@@ -59,23 +34,16 @@ namespace MovieList.Services.Services
 
             if (news == null)
             {
-                return new BaseResponse<NewsResponse>
-                {
-                    Description = "News not found",
-                    StatusCode = HttpStatusCode.NotFound
-                };
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                       $"News with id: {id} was not found.");
             }
 
             var response = _mapper.Map<NewsResponse>(news);
 
-            return new BaseResponse<NewsResponse>
-            {
-                Data = response,
-                StatusCode = HttpStatusCode.OK
-            };
+            return response;
         }
 
-        public async Task<IBaseResponse<List<NewsResponse>>> GetAll(NewsFilterRequest filterRequest)
+        public async Task<List<NewsResponse>> GetAll(NewsFilterRequest filterRequest)
         {
             var filter = _mapper.Map<NewsFilter>(filterRequest);
 
@@ -90,27 +58,52 @@ namespace MovieList.Services.Services
                 orderBy: filter.OrderByQuery,
                 take: filter.Take);
 
+            if (news == null)
+            {
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                       $"News were not found.");
+            }
+
             var response = _mapper.Map<List<NewsResponse>>(news);
 
-            return new BaseResponse<List<NewsResponse>>
-            {
-                Data = response,
-                StatusCode = HttpStatusCode.OK
-            };
+            return response;
         }
 
-        public IBaseResponse<NewsResponse> Edit(NewsRequest model)
+        public NewsResponse Create(NewsRequest model, int userId)
+        {
+            var userProfile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
+                    predicate: x => x.UserId == userId,
+                    include: i => i
+                        .Include(x => x.FileModel));
+
+            if (userProfile == null)
+            {
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                     $"Profile with Id: {userId} was not found. Can't create news.");
+            }
+
+            var news = _mapper.Map<News>(model);
+            news.AuthorId = userId;
+
+            _unitOfWork.GetRepository<News>().Insert(news);
+            _unitOfWork.SaveChanges();
+             
+            var response = _mapper.Map<NewsResponse>(news);
+            response.Author = userProfile.Name;
+            response.AvatarUrl = userProfile.FileModel.Path;
+
+            return response;
+        }    
+
+        public NewsResponse Edit(NewsRequest model)
         {
             var news = _unitOfWork.GetRepository<News>().GetFirstOrDefault(
                 predicate: x => x.Id == model.Id);
-                   
+
             if (news == null)
             {
-                return new BaseResponse<NewsResponse>
-                {
-                    Description = "News not found",
-                    StatusCode = HttpStatusCode.NotFound
-                };
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                       $"News with id: {model.Id} was not found.");
             }
 
             _mapper.Map(model, news);
@@ -120,31 +113,22 @@ namespace MovieList.Services.Services
 
             var response = _mapper.Map<NewsResponse>(news);
 
-            return new BaseResponse<NewsResponse>
-            {
-                Data = response,
-                StatusCode = HttpStatusCode.OK
-            };
+            return response;
         }    
         
-        public async Task<IBaseResponse<bool>> Delete(int id)
+        public void Delete(int id)
         {
-            var comments = await _unitOfWork.GetRepository<Comment>().GetAllAsync(
-                predicate: x => x.NewsId == id);
+            var news = _unitOfWork.GetRepository<News>().GetFirstOrDefault(
+               predicate: x => x.Id == id);
 
-            foreach(var comment in comments)
+            if (news == null)
             {
-                _unitOfWork.GetRepository<Comment>().Delete(comment);
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                    $"News with Id: {id} was not found. Can't delete news.");
             }
 
             _unitOfWork.GetRepository<News>().Delete(id);
             _unitOfWork.SaveChanges();
-
-            return new BaseResponse<bool>
-            {
-                Data = true,
-                StatusCode = HttpStatusCode.OK
-            };
         }
     }
 }

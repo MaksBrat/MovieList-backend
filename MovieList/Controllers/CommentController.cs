@@ -1,61 +1,44 @@
 ﻿using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using MovieList.Domain.RequestModels.MovieNews;
-using MovieList.Common.Extentions;
 using Microsoft.AspNetCore.Authorization;
+using MovieList.Controllers.Base;
 
 namespace MovieList.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class CommentController : ControllerBase
+    public class CommentController : BaseController
     {
         private readonly ICommentService _commentService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private int _userId;
-
-        public CommentController(ICommentService commentService, IHttpContextAccessor httpContextAccessor)
+        public CommentController(ICommentService commentService)
         {
             _commentService = commentService;
-            _httpContextAccessor = httpContextAccessor;
-
-            _userId = _httpContextAccessor.HttpContext.User?.GetUserId() ?? 0;
         }
 
         [Authorize]
         [HttpPost]
         public IActionResult Create(CommentRequest model)
         {
-            var response = _commentService.Create(model, _userId);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            var response = _commentService.Create(model, UserId);
+
+            return Ok(response);
         }
 
         [HttpPost("{id}")]
         public IActionResult Get(int id)
         {
             var response = _commentService.Get(id);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+
+            return Ok(response);
         }
 
-        [HttpGet("getAllByNewsId/{newsId}")]
+        [HttpGet("get-all-by-newsId/{newsId}")]
         public async Task<IActionResult> getAll(int newsId)
         {
             var response = await _commentService.GetAll(newsId);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+
+            return Ok(response);
         }
 
         [Authorize]
@@ -63,23 +46,17 @@ namespace MovieList.Controllers
         public IActionResult Edit(CommentRequest model)
         {
             var response = _commentService.Edit(model);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+
+            return Ok(response);
         }
 
         [Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var response = _commentService.Delete(id);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(response.Data);
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            _commentService.Delete(id);
+
+            return Ok();
         }
     }
 }

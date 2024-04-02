@@ -1,37 +1,28 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MovieList.Domain.Entity.Account;
+using MovieList.Controllers.Base;
 using MovieList.Domain.RequestModels.Account;
 using MovieList.Services.Interfaces;
-using System.Net;
 
 namespace MovieList.Controllers
 {
-
-    [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;
-        private RoleManager<ApplicationRole> _roleManager;
 
-        public AccountController(IAccountService acccoutService, RoleManager<ApplicationRole> roleManager)
+        public AccountController(IAccountService acccoutService)
         {
             _accountService = acccoutService;
-            _roleManager = roleManager;
         }
 
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest model)
         {
-            var response = await _accountService.Register(model);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok(new { Message = "User created successfully." });
-            }
-            return new BadRequestObjectResult(new { Message = response.Description });
+            await _accountService.Register(model);
+
+            return Ok();
         }
 
         [HttpPost]
@@ -40,11 +31,12 @@ namespace MovieList.Controllers
         {
             var response = await _accountService.Login(model);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response == null)
             {
-                return Ok(response.Data);
+                return Unauthorized();
             }
-            return Unauthorized();
+
+            return Ok(response);
         }
 
         [Authorize]
@@ -52,26 +44,27 @@ namespace MovieList.Controllers
         [Route("revoke")]
         public async Task<IActionResult> Logout()
         {
-            var userName = User.Identity.Name;
-            var response = await _accountService.Logout(userName);
+            await _accountService.Logout(User.Identity.Name);
 
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return NoContent();
-            }
-            return BadRequest(response.Description);
+            return Ok();
         }
 
         [HttpPost]
-        [Route("createRole")]
+        [Route("create-role")]
         public async Task<IActionResult> CreateRole([FromQuery] string name)
         {
-            IdentityResult result = await _roleManager.CreateAsync(new ApplicationRole() { Name = name });
-            if (result.Succeeded)
-            {
-                return Ok(new { Message = "Role Created Successfully" });
-            }
-            return new BadRequestObjectResult(new { Message = "Failed to create role" });
+            await _accountService.CreateRoleAsync(name);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            await _accountService.ConfirmEmail(token, email);
+
+            return Ok();
         }
     }
 }

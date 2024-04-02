@@ -36,6 +36,7 @@ namespace MovieList.Services
             #endregion
 
             #region Movie
+
             CreateMap<Movie, MovieResponse>()
                 .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.MovieGenres
                     .Select(x => new GenreResponse

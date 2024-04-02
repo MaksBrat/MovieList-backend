@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MovieList.Domain\MovieList.Domain.csproj" />
-    <ProjectReference Include="..\MovieList.Resources\MovieList.Resources.csproj" />
   </ItemGroup>
 
 </Project>

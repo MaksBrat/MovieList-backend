@@ -1,6 +1,4 @@
-﻿using MovieList.DAL.Interfaces;
-using MovieList.Domain.Entity.Account;
-using MovieList.Domain.Response;
+﻿using MovieList.Domain.Entity.Account;
 using MovieList.Domain.ResponseModels.Account;
 using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +9,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using MovieList.Domain.RequestModels.Account;
+using MovieList.Services.Exceptions;
+using System.Net;
+using MovieList.Services.Exceptions.Base;
 
 namespace MovieList.Services.Services
 {
@@ -42,6 +43,7 @@ namespace MovieList.Services.Services
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return token;
         }
+
         public string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
@@ -51,6 +53,7 @@ namespace MovieList.Services.Services
                 return Convert.ToBase64String(randomNumber);
             }
         }   
+
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
         {
             var tokenValidationParameters = new TokenValidationParameters
@@ -77,15 +80,13 @@ namespace MovieList.Services.Services
                 
             return principal;
         }
-        public async Task<IBaseResponse<AuthenticatedResponse>> RefreshToken(TokenRequest tokenModel)
+
+        public async Task<AuthenticatedResponse> RefreshToken(TokenRequest tokenModel)
         {   
             if(tokenModel == null)
             {
-                return new BaseResponse<AuthenticatedResponse>
-                {
-                    Description = "Invalid client request",
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                };
+                throw new CustomizedResponseException((int)HttpStatusCode.BadRequest, ErrorIdConstans.BadRequest,
+                    "Invalid client request");
             }
 
             string accessToken = tokenModel.AccessToken!;
@@ -97,13 +98,16 @@ namespace MovieList.Services.Services
 
             var user = await _userManager.FindByNameAsync(userName);
 
-            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            if(user == null)
             {
-                return new BaseResponse<AuthenticatedResponse>
-                {
-                    Description = "Invalid client request",
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                };
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                        $"User with name: {userName} was not found.");
+            }
+
+            if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                throw new CustomizedResponseException((int)HttpStatusCode.UnprocessableEntity, ErrorIdConstans.UnprocessableEntity,
+                    "Invalid refresh token");
             }
 
             var newAccessToken = GenerateAccessToken(principal.Claims.ToList());
@@ -111,16 +115,14 @@ namespace MovieList.Services.Services
 
             user.RefreshToken = newRefreshToken;
             await _userManager.UpdateAsync(user);
-
-            return new BaseResponse<AuthenticatedResponse>
+            
+            var response = new AuthenticatedResponse
             {
-                Data = new AuthenticatedResponse
-                {
-                    Token = newAccessToken,
-                    RefreshToken = newRefreshToken
-                },
-                StatusCode = System.Net.HttpStatusCode.OK,
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken
             };
+
+            return response;
         }
     }
 }

@@ -4,9 +4,10 @@ namespace MovieList.Common.Utility
 {
     public static class UrlParser
     {
-        private static string _pattern = "v=([^&]+)";
         private const string YOUTUBE_URL = "https://www.youtube.com/embed/";
         private const string AUTOPLAY_QUERY = "?autoplay=1";
+
+        private static string _pattern = "v=([^&]+)";
 
         public static string ParseTrailerUrl(string youtubeUrl)
         {
