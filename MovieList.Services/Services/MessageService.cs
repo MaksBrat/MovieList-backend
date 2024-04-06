@@ -1,12 +1,12 @@
 ﻿using MovieList.DAL.Interfaces;
 using MovieList.Domain.Chat;
-using MovieList.Domain.RequestModels.Chat;
 using MovieList.Domain.ResponseModels.Chat;
 using MovieList.Services.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MovieList.Domain.Entity.Profile;
 using MovieList.Services.Exceptions;
+using MovieList.Domain.DTO.Chat;
 
 namespace MovieList.Services.Services
 {
@@ -29,7 +29,7 @@ namespace MovieList.Services.Services
                     .Include(x => x.Author)
                         .ThenInclude(x => x.Profile)
                             .ThenInclude(x => x.FileModel),
-            pageIndex: pageIndex,
+                pageIndex: pageIndex,
                 pageSize: pageSize
             );
 

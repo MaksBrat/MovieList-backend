@@ -1,15 +1,14 @@
 ﻿using MovieList.Domain.RequestModels.EntitiesFilters;
-using MovieList.Domain.RequestModels.Movie;
 using MovieList.Domain.ResponseModels.Movie;
 
 namespace MovieList.Services.Interfaces
 {
     public interface IMovieService
     {
-        void Create(MovieRequest model);
-        MovieResponse Get(int id);
-        Task<List<MovieResponse>> GetAll(MovieFilterRequest filterRequest);
-        Task EditAsync(MovieRequest model);
+        Task Create(MovieDTO model);
+        MovieDTO Get(int id);
+        Task<List<MovieDTO>> GetAll(MovieFilterRequest filterRequest);
+        Task EditAsync(MovieDTO model);
         void Delete(int id);             
     }
 }

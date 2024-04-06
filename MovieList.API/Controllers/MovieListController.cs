@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MovieList.Controllers.Base;
-using MovieList.Domain.RequestModels.MovieListItem;
+using MovieList.Domain.DTO.MovieList;
 using MovieList.Services.Interfaces;
 
 namespace MovieList.Controllers
@@ -48,7 +48,7 @@ namespace MovieList.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(MovielistItemRequest model)
+        public IActionResult Update(MovielistItemDTO model)
         {
             _movieListService.Update(model);
 

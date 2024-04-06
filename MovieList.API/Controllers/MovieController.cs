@@ -2,8 +2,8 @@
 using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MovieList.Domain.RequestModels.Movie;
 using MovieList.Controllers.Base;
+using MovieList.Domain.ResponseModels.Movie;
 
 namespace MovieList.Controllers
 {
@@ -35,16 +35,16 @@ namespace MovieList.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult Create(MovieRequest model)
+        public async Task<IActionResult> CreateAsync(MovieDTO model)
         {
-            _movieService.Create(model);
+            await _movieService.Create(model);
 
             return Ok();
         }     
 
         [Authorize]
         [HttpPut]
-        public async Task<IActionResult> EditAsync(MovieRequest model)
+        public async Task<IActionResult> EditAsync(MovieDTO model)
         {
             await _movieService.EditAsync(model);
 

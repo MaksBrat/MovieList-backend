@@ -1,12 +1,11 @@
 ﻿using MovieList.DAL.Interfaces;
 using MovieList.Domain.Entity.MovieNews;
-using MovieList.Domain.RequestModels.MovieNews;
-using MovieList.Domain.ResponseModels.MovieNews;
 using MovieList.Services.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MovieList.Domain.Entity.Profile;
 using MovieList.Services.Exceptions;
+using MovieList.Domain.DTO.News.Comment;
 
 namespace MovieList.Services.Services
 {
@@ -84,7 +83,7 @@ namespace MovieList.Services.Services
 
         public CommentResponse Edit(CommentRequest model)
         {
-            var comment = _unitOfWork.GetRepository<News>().GetFirstOrDefault(
+            var comment = _unitOfWork.GetRepository<Comment>().GetFirstOrDefault(
                 predicate: x => x.Id == model.Id);
 
             if (comment == null)
@@ -95,7 +94,7 @@ namespace MovieList.Services.Services
 
             _mapper.Map(model, comment);
 
-            _unitOfWork.GetRepository<News>().Update(comment);
+            _unitOfWork.GetRepository<Comment>().Update(comment);
             _unitOfWork.SaveChanges();
 
             var response = _mapper.Map<CommentResponse>(comment);

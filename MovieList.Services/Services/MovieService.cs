@@ -5,9 +5,9 @@ using MovieList.Domain.RequestModels.EntitiesFilters;
 using MovieList.Services.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using MovieList.Domain.RequestModels.Movie;
 using MovieList.Domain.ResponseModels.Movie;
 using MovieList.Services.Exceptions;
+using MovieList.Core.Interfaces;
 
 namespace MovieList.Services.Services
 {
@@ -15,14 +15,16 @@ namespace MovieList.Services.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ITmdbService _tmdbService;
 
-        public MovieService(IUnitOfWork unitOfWork, IMapper mapper)
+        public MovieService(IUnitOfWork unitOfWork, IMapper mapper, ITmdbService tmdbService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _tmdbService = tmdbService;
         }
 
-        public MovieResponse Get(int id)
+        public MovieDTO Get(int id)
         {   
             var movie = _unitOfWork.GetRepository<Movie>().GetFirstOrDefault(
                 predicate: x => x.Id == id,
@@ -36,12 +38,12 @@ namespace MovieList.Services.Services
                     $"Movie with id: {id} was not found.");
             }
 
-            var response = _mapper.Map<MovieResponse>(movie);
+            var response = _mapper.Map<MovieDTO>(movie);
 
             return response;
         }
 
-        public async Task<List<MovieResponse>> GetAll(MovieFilterRequest filterRequest)
+        public async Task<List<MovieDTO>> GetAll(MovieFilterRequest filterRequest)
         {
             var filter = _mapper.Map<MovieFilter>(filterRequest);
 
@@ -62,20 +64,28 @@ namespace MovieList.Services.Services
                     $"Movies were not found.");
             }
 
-            var response = _mapper.Map<List<MovieResponse>>(moviesPagedList.Items);
+            var response = _mapper.Map<List<MovieDTO>>(moviesPagedList.Items);
 
             return response;
         }
 
-        public void Create(MovieRequest model)
+        // TODO: return id?
+        public async Task Create(MovieDTO model)
         {
             var movie = _mapper.Map<Movie>(model);
+
+            var response = await _tmdbService.GetMediaAsync(movie.MovieType, movie.Title);
+            var tmdbMovie = response.Results.FirstOrDefault();
+
+            movie.TmdbId = tmdbMovie?.Id;
+            movie.TmdbRating = tmdbMovie?.VoteAverage;
+            movie.Description = tmdbMovie?.Overview;
 
             _unitOfWork.GetRepository<Movie>().Insert(movie);
             _unitOfWork.SaveChanges();
         }
 
-        public async Task EditAsync(MovieRequest model)
+        public async Task EditAsync(MovieDTO model)
         {
             var movie = await _unitOfWork.GetRepository<Movie>().GetFirstOrDefaultAsync(
                 predicate: x => x.Id == model.Id,

@@ -1,8 +1,8 @@
-﻿using MovieList.Domain.RequestModels.Chat;
-using MovieList.Services.Interfaces;
+﻿using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieList.Controllers.Base;
+using MovieList.Domain.DTO.Chat;
 
 namespace MovieList.Controllers
 {

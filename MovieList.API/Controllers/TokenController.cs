@@ -1,7 +1,7 @@
 ﻿using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using MovieList.Domain.RequestModels.Account;
 using MovieList.Controllers.Base;
+using MovieList.Domain.DTO.Account;
 
 namespace MovieList.Controllers
 {

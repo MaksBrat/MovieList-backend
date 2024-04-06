@@ -1,7 +1,7 @@
 ﻿using MovieList.Domain.Entity.Account;
 using MovieList.Domain.ResponseModels.Profile;
 using Microsoft.AspNetCore.Http;
-using MovieList.Domain.RequestModels.Profile;
+using MovieList.Domain.DTO.Profile;
 
 namespace MovieList.Services.Interfaces
 {

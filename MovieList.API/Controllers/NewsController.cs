@@ -1,10 +1,10 @@
 ﻿using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using MovieList.Domain.RequestModels.MovieNews;
 using Microsoft.AspNetCore.Authorization;
 using MovieList.Domain.RequestModels.EntitiesFilters;
 using MovieList.Controllers.Base;
+using MovieList.Domain.DTO.News;
 
 namespace MovieList.Controllers
 {

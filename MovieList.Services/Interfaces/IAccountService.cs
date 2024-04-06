@@ -1,4 +1,4 @@
-﻿using MovieList.Domain.RequestModels.Account;
+﻿using MovieList.Domain.DTO.Account;
 using MovieList.Domain.ResponseModels.Account;
 
 namespace MovieList.Services.Interfaces

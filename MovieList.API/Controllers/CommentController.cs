@@ -1,8 +1,8 @@
 ﻿using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using MovieList.Domain.RequestModels.MovieNews;
 using Microsoft.AspNetCore.Authorization;
 using MovieList.Controllers.Base;
+using MovieList.Domain.DTO.News.Comment;
 
 namespace MovieList.Controllers
 {

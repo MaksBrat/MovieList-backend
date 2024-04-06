@@ -1,7 +1,9 @@
 using MovieList.DAL;
-using MovieList;
 using MovieList.Hubs;
 using MovieList.API.Infrastructure.Extensions;
+using MovieList.Core.Services;
+using MovieList.Core.Interfaces;
+using MovieList.API.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,9 +26,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-var scope = app.Services.CreateScope();
-var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-DbInitializer.Initialize(context);
+await AppInitializer.InitializeAsync(app.Services);
 
 app.ConfigureCustomExceptionMiddleware();
 

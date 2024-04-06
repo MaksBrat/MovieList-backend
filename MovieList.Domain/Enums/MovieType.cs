@@ -2,10 +2,8 @@
 {
     public enum MovieType
     {
-        Serial = 1,
-        Film = 2,
-        OVA = 3,
-        ONA = 4,
-        Special = 5
+        Movie = 1,
+        Tv = 2,
+        Special = 3
     }
 }

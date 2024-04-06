@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieList.Controllers.Base;
-using MovieList.Domain.RequestModels.Account;
+using MovieList.Domain.DTO.Account;
 using MovieList.Services.Interfaces;
 
 namespace MovieList.Controllers

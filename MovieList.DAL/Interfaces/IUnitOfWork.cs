@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Transactions;
 
 namespace MovieList.DAL.Interfaces
 {
@@ -11,5 +7,6 @@ namespace MovieList.DAL.Interfaces
         IRepository<TEntity> GetRepository<TEntity>() where TEntity : class;
         int SaveChanges();
         Task<int> SaveChangesAsync();
+        public TransactionScope BeginTransaction();
     }
 }

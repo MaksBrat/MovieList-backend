@@ -1,5 +1,4 @@
-﻿using MovieList.Domain.RequestModels.Chat;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 
 namespace MovieList.Hubs
 {

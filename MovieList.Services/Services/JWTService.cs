@@ -8,10 +8,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using MovieList.Domain.RequestModels.Account;
 using MovieList.Services.Exceptions;
 using System.Net;
 using MovieList.Services.Exceptions.Base;
+using MovieList.Domain.DTO.Account;
 
 namespace MovieList.Services.Services
 {
@@ -26,7 +26,88 @@ namespace MovieList.Services.Services
             _userManager = userManager;
         }
 
-        public string GenerateAccessToken(IEnumerable<Claim> authClaims)
+        public async Task<AuthenticatedResponse> BuildAuthenticatedResponse(ApplicationUser user)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+
+            var accessToken = GenerateAccessToken(authClaims);
+            var refreshToken = GenerateRefreshToken();
+
+            _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+
+            await _userManager.UpdateAsync(user);
+
+            var response = new AuthenticatedResponse
+            {
+                Token = accessToken,
+                RefreshToken = refreshToken,
+                UserId = user.Id
+            };
+
+            return response;
+        }
+
+        public async Task<AuthenticatedResponse> RefreshToken(TokenRequest tokenModel)
+        {
+            if (tokenModel == null)
+            {
+                throw new CustomizedResponseException((int)HttpStatusCode.BadRequest, ErrorIdConstans.BadRequest,
+                    "Invalid client request");
+            }
+
+            string accessToken = tokenModel.AccessToken!;
+            string refreshToken = tokenModel.RefreshToken!;
+
+            var principal = GetPrincipalFromExpiredToken(accessToken);
+
+            string userName = principal.Identity.Name;
+
+            var user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
+                        $"User with name: {userName} was not found.");
+            }
+
+            if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                throw new CustomizedResponseException((int)HttpStatusCode.UnprocessableEntity, ErrorIdConstans.UnprocessableEntity,
+                    "Invalid refresh token");
+            }
+
+            var newAccessToken = GenerateAccessToken(principal.Claims.ToList());
+            var newRefreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            await _userManager.UpdateAsync(user);
+
+            var response = new AuthenticatedResponse
+            {
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken
+            };
+
+            return response;
+        }
+
+        private string GenerateAccessToken(IEnumerable<Claim> authClaims)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -41,10 +122,11 @@ namespace MovieList.Services.Services
                 signingCredentials: signIn);
 
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
             return token;
         }
 
-        public string GenerateRefreshToken()
+        private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
             using (var rng = RandomNumberGenerator.Create())
@@ -52,9 +134,9 @@ namespace MovieList.Services.Services
                 rng.GetBytes(randomNumber);
                 return Convert.ToBase64String(randomNumber);
             }
-        }   
+        }
 
-        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
+        private ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -79,50 +161,6 @@ namespace MovieList.Services.Services
             }
                 
             return principal;
-        }
-
-        public async Task<AuthenticatedResponse> RefreshToken(TokenRequest tokenModel)
-        {   
-            if(tokenModel == null)
-            {
-                throw new CustomizedResponseException((int)HttpStatusCode.BadRequest, ErrorIdConstans.BadRequest,
-                    "Invalid client request");
-            }
-
-            string accessToken = tokenModel.AccessToken!;
-            string refreshToken = tokenModel.RefreshToken!;
-
-            var principal = GetPrincipalFromExpiredToken(accessToken);
-
-            string userName = principal.Identity.Name;
-
-            var user = await _userManager.FindByNameAsync(userName);
-
-            if(user == null)
-            {
-                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                        $"User with name: {userName} was not found.");
-            }
-
-            if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-            {
-                throw new CustomizedResponseException((int)HttpStatusCode.UnprocessableEntity, ErrorIdConstans.UnprocessableEntity,
-                    "Invalid refresh token");
-            }
-
-            var newAccessToken = GenerateAccessToken(principal.Claims.ToList());
-            var newRefreshToken = GenerateRefreshToken();
-
-            user.RefreshToken = newRefreshToken;
-            await _userManager.UpdateAsync(user);
-            
-            var response = new AuthenticatedResponse
-            {
-                Token = newAccessToken,
-                RefreshToken = newRefreshToken
-            };
-
-            return response;
         }
     }
 }

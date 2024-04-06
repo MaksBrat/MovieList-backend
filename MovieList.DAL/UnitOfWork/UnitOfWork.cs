@@ -1,14 +1,6 @@
 ﻿using MovieList.DAL.Interfaces;
 using MovieList.DAL.Repository;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Xrm.Sdk;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Transactions;
 
 namespace MovieList.DAL.UnitOfWork
 {
@@ -36,7 +28,10 @@ namespace MovieList.DAL.UnitOfWork
         }
 
         public int SaveChanges() => _dbContext.SaveChanges();
-        public async Task<int> SaveChangesAsync() => await _dbContext.SaveChangesAsync();           
+
+        public async Task<int> SaveChangesAsync() => await _dbContext.SaveChangesAsync();
+
+        public TransactionScope BeginTransaction() => new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
         private bool disposed = false;
 
@@ -51,7 +46,7 @@ namespace MovieList.DAL.UnitOfWork
             if (!this.disposed)
             {
                 if (disposing)
-                {
+                {                        
                     _repositories?.Clear();
                     _dbContext.Dispose();
                 }

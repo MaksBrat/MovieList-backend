@@ -1,6 +1,5 @@
 ﻿using MovieList.DAL.Interfaces;
 using MovieList.Domain.Entity.MovieNews;
-using MovieList.Domain.RequestModels.MovieNews;
 using MovieList.Domain.ResponseModels.MovieNews;
 using MovieList.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +8,7 @@ using MovieList.Common.EntitiesFilters;
 using MovieList.Domain.RequestModels.EntitiesFilters;
 using MovieList.Domain.Entity.Profile;
 using MovieList.Services.Exceptions;
+using MovieList.Domain.DTO.News;
 
 namespace MovieList.Services.Services
 {
@@ -35,7 +35,7 @@ namespace MovieList.Services.Services
             if (news == null)
             {
                 throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                       $"News with id: {id} was not found.");
+                    $"News with id: {id} was not found.");
             }
 
             var response = _mapper.Map<NewsResponse>(news);
@@ -103,7 +103,7 @@ namespace MovieList.Services.Services
             if (news == null)
             {
                 throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                       $"News with id: {model.Id} was not found.");
+                    $"News with id: {model.Id} was not found.");
             }
 
             _mapper.Map(model, news);

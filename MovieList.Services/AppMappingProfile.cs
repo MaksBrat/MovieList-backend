@@ -4,8 +4,6 @@ using MovieList.Common.Utility;
 using MovieList.Domain.Chat;
 using MovieList.Domain.Entity.MovieNews;
 using MovieList.Domain.Entity.Movies;
-using MovieList.Domain.RequestModels.MovieNews;
-using MovieList.Domain.RequestModels.Chat;
 using MovieList.Domain.RequestModels.EntitiesFilters;
 using MovieList.Domain.ResponseModels.MovieNews;
 using MovieList.Domain.ResponseModels.Chat;
@@ -13,12 +11,13 @@ using MovieList.Domain.ResponseModels.Profile;
 using MovieList.Domain.Entity.MovieList;
 using MovieList.Domain.Entity.Profile;
 using System.Globalization;
-using MovieList.Domain.RequestModels.Profile;
-using MovieList.Domain.RequestModels.Movie;
-using MovieList.Domain.ResponseModels.MovieList;
 using MovieList.Domain.ResponseModels.Movie;
 using MovieList.Domain.ResponseModels.Genre;
-using MovieList.Domain.RequestModels.MovieListItem;
+using MovieList.Domain.DTO.News;
+using MovieList.Domain.DTO.Chat;
+using MovieList.Domain.DTO.Profile;
+using MovieList.Domain.DTO.MovieList;
+using MovieList.Domain.DTO.News.Comment;
 
 namespace MovieList.Services
 {
@@ -37,16 +36,16 @@ namespace MovieList.Services
 
             #region Movie
 
-            CreateMap<Movie, MovieResponse>()
+            CreateMap<Movie, MovieDTO>()
                 .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.MovieGenres
-                    .Select(x => new GenreResponse
+                    .Select(x => new GenreDTO
                     {
                         Id = x.GenreId,
                         Name = x.Genre.Name
                     }).ToList()))
                 .ForMember(dest => dest.ReleaseDate, opt => opt.MapFrom(src => src.ReleaseDate.ToString("yyyy-MM-dd")));
 
-            CreateMap<MovieRequest, Movie>()
+            CreateMap<MovieDTO, Movie>()
                 .ForMember(dest => dest.MovieGenres, opt => opt.MapFrom(src => src.Genres
                 .Select(x => new MovieGenre
                 {   
@@ -71,10 +70,10 @@ namespace MovieList.Services
 
             #region MovieList
 
-            CreateMap<MovieListItem, MovieListItemResponse>()
+            CreateMap<MovieListItem, MovielistItemDTO>()
                 .ForMember(dest => dest.Movie, opt => opt.MapFrom(src => src.Movie));
 
-            CreateMap<MovielistItemRequest, MovieListItem>()
+            CreateMap<MovielistItemDTO, MovieListItem>()
                 .ForMember(dest => dest.MovieId, opt => opt.MapFrom(src => src.Movie.Id))
                 .ForMember(dest => dest.Profile, opt => opt.Ignore())
                 .ForMember(dest => dest.Movie, opt => opt.Ignore());

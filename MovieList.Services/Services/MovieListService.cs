@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MovieList.DAL.Interfaces;
+using MovieList.Domain.DTO.MovieList;
 using MovieList.Domain.Entity.MovieList;
 using MovieList.Domain.Enums;
-using MovieList.Domain.RequestModels.MovieListItem;
-using MovieList.Domain.ResponseModels.MovieList;
 using MovieList.Services.Exceptions;
 using MovieList.Services.Interfaces;
 
@@ -21,7 +20,7 @@ namespace MovieList.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<List<MovieListItemResponse>> Get(int userId)
+        public async Task<List<MovielistItemDTO>> Get(int userId)
         {
             var movieList = await _unitOfWork.GetRepository<MovieListItem>().GetAllAsync(
                 predicate: x => x.ProfileId == userId,
@@ -36,7 +35,7 @@ namespace MovieList.Services.Services
                     $"Movie list for user with id: {userId} was not found.");
             }
 
-            var movieListResponse = _mapper.Map<List<MovieListItemResponse>>(movieList);
+            var movieListResponse = _mapper.Map<List<MovielistItemDTO>>(movieList);
 
             return movieListResponse;
         }
@@ -62,7 +61,7 @@ namespace MovieList.Services.Services
             _unitOfWork.SaveChanges();
         }
 
-        public void Update(MovielistItemRequest model)
+        public void Update(MovielistItemDTO model)
         {
             var movieListItem = _unitOfWork.GetRepository<MovieListItem>().GetFirstOrDefault(
                 predicate: x => x.Id == model.Id);

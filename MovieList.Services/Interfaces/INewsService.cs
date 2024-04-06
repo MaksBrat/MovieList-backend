@@ -1,6 +1,6 @@
-﻿using MovieList.Domain.RequestModels.MovieNews;
-using MovieList.Domain.RequestModels.EntitiesFilters;
+﻿using MovieList.Domain.RequestModels.EntitiesFilters;
 using MovieList.Domain.ResponseModels.MovieNews;
+using MovieList.Domain.DTO.News;
 
 namespace MovieList.Services.Interfaces
 {

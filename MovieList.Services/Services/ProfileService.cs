@@ -8,11 +8,11 @@ using System.Net;
 using MovieList.Domain.ResponseModels.Profile;
 using MovieList.Domain.Entity;
 using MovieList.Domain.Entity.Profile;
-using MovieList.Domain.RequestModels.Profile;
 using MovieList.Common.Constants;
 using MovieList.Services.Exceptions;
 using MovieList.Services.Exceptions.Base;
 using MovieList.Core.Interfaces;
+using MovieList.Domain.DTO.Profile;
 
 namespace MovieList.Services.Services
 {
@@ -58,11 +58,9 @@ namespace MovieList.Services.Services
                      $"Profile with Id: {user.Id} already exists");
             }
 
-            var maxId = await _unitOfWork.GetRepository<UserProfile>().MaxAsync(x => x.Id);
-
             userProfile = new UserProfile
             {
-                Name = $"User{maxId + 1:00000000}",
+                Name = $"User{user.Id:00000000}",
                 RegistratedAt = DateTime.UtcNow,
                 UserId = user.Id,
                 FileModel = new FileModel { Name = "user-default-image.png", Path = ProfileConstants.DEFAULT_PROFILE_IMAGE_PATH }

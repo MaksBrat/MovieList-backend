@@ -1,4 +1,4 @@
-﻿using MovieList.Domain.RequestModels.Chat;
+﻿using MovieList.Domain.DTO.Chat;
 using MovieList.Domain.ResponseModels.Chat;
 
 namespace MovieList.Services.Interfaces

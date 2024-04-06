@@ -1,14 +1,12 @@
-﻿using MovieList.Domain.RequestModels.Account;
+﻿using MovieList.Domain.DTO.Account;
+using MovieList.Domain.Entity.Account;
 using MovieList.Domain.ResponseModels.Account;
-using System.Security.Claims;
 
 namespace MovieList.Services.Interfaces
 {
     public interface IJWTService
     {
-        string GenerateAccessToken(IEnumerable<Claim> authClaims);
-        string GenerateRefreshToken();
-        ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token);
+        Task<AuthenticatedResponse> BuildAuthenticatedResponse(ApplicationUser user);
         Task<AuthenticatedResponse> RefreshToken(TokenRequest tokenModel);
     }
 }

@@ -1,5 +1,4 @@
-﻿using MovieList.Domain.Entity;
-using MovieList.Domain.Entity.Account;
+﻿using MovieList.Domain.Entity.Account;
 using MovieList.Domain.Entity.MovieList;
 
 namespace MovieList.Domain.Entity.Profile
@@ -12,7 +11,7 @@ namespace MovieList.Domain.Entity.Profile
         public int FileModelId { get; set; }
         public FileModel FileModel { get; set; }
         public DateTime RegistratedAt { get; set; }
-        public int UserId { get; set; }
+        public int UserId { get; set; } // TODO: delete this
         public ApplicationUser User { get; set; }
         public ICollection<MovieListItem> MovieList { get; set; }
     }

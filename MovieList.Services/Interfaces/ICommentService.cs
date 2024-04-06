@@ -1,5 +1,4 @@
-﻿using MovieList.Domain.RequestModels.MovieNews;
-using MovieList.Domain.ResponseModels.MovieNews;
+﻿using MovieList.Domain.DTO.News.Comment;
 
 namespace MovieList.Services.Interfaces
 {
