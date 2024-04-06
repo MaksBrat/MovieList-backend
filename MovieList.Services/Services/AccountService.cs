@@ -68,7 +68,7 @@ namespace MovieList.Services.Services
 
             transactionScope.Complete();
         }
-
+                
         public async Task<AuthenticatedResponse> Login(LoginRequest model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
