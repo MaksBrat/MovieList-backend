@@ -33,16 +33,16 @@ namespace MovieList.Controllers
             return Ok(response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync(MovieDTO model)
         {
             await _movieService.Create(model);
 
             return Ok();
-        }     
+        }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> EditAsync(MovieDTO model)
         {

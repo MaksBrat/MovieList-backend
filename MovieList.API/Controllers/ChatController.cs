@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieList.Controllers.Base;
 using MovieList.Domain.DTO.Chat;
+using MovieList.Hubs;
 
 namespace MovieList.Controllers
 {
@@ -10,12 +11,12 @@ namespace MovieList.Controllers
     public class ChatController : BaseController
     {
         private readonly IMessageService _messageService;
-        private readonly IChatHubService _chatHubService;
+        private readonly MovieListHub _movieListHub;
 
-        public ChatController(IMessageService messageService, IChatHubService chatHubService)
+        public ChatController(IMessageService messageService, MovieListHub movieListHub)
         {
             _messageService = messageService;
-            _chatHubService = chatHubService;
+            _movieListHub = movieListHub;
         }
 
         [Authorize]
@@ -23,7 +24,7 @@ namespace MovieList.Controllers
         public async Task<IActionResult> Send(MessageRequest model)
         {
             var response = _messageService.Create(model, UserId);
-            await _chatHubService.SendToAllAsync("ReceiveMessage", response);
+            await _movieListHub.SendToAllAsync("ReceiveMessage", response);
 
             return Ok();
         }
@@ -41,7 +42,7 @@ namespace MovieList.Controllers
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             _messageService.Delete(id);
-            await _chatHubService.SendToAllAsync("MessageDeleted", id);
+            await _movieListHub.SendToAllAsync("MessageDeleted", id);
 
             return Ok();
         }

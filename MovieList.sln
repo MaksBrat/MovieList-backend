@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.API", "MovieList.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.DAL", "MovieList.DAL\MovieList.DAL.csproj", "{9ED38733-7064-4060-B218-25448944636C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.Domain", "MovieList.Domain\MovieList.Domain.csproj", "{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.Core", "MovieList.Services\MovieList.Core.csproj", "{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieList.BLL", "MovieList.BLL\MovieList.BLL.csproj", "{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{9ED38733-7064-4060-B218-25448944636C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9ED38733-7064-4060-B218-25448944636C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9ED38733-7064-4060-B218-25448944636C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43A3FAD6-8F1F-43F4-A029-8DEAF5305813}.Release|Any CPU.Build.0 = Release|Any CPU
 		{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{074BA9F0-B5A2-4C6E-924A-AD3EC2C1329A}.Release|Any CPU.ActiveCfg = Release|Any CPU

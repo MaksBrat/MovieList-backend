@@ -1,7 +1,6 @@
 ﻿using MovieList.DAL;
 using MovieList.Domain.Entity.Movies;
 using MovieList.Domain.Entity.Genres;
-using MovieList.Domain.Entity.Account;
 using MovieList.Core.Interfaces;
 
 namespace MovieList.API.Infrastructure
@@ -1208,26 +1207,6 @@ namespace MovieList.API.Infrastructure
             context.SaveChanges();
 
             #endregion MovieGenre
-
-            #region Roles
-
-            var roles = new List<ApplicationRole>
-            {
-                new ApplicationRole
-                {
-                    Name = "admin",
-                    NormalizedName = "ADMIN",
-                },
-                new ApplicationRole
-                {
-                    Name = "user",
-                    NormalizedName = "USER",
-                }
-            };
-
-            context.Roles.AddRange(roles);
-
-            #endregion
         }
     }
 }

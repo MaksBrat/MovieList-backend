@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MovieList.Controllers.Base;
 using MovieList.Domain.DTO.MovieList;
 using MovieList.Services.Interfaces;
@@ -15,6 +16,7 @@ namespace MovieList.Controllers
             _movieListService = movieListService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
@@ -23,6 +25,7 @@ namespace MovieList.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpGet("is-movie-in-user-list/{movieId}")]
         public async Task<IActionResult> IsMoveInUserList(int movieId)
         {
@@ -31,6 +34,7 @@ namespace MovieList.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult Add(int movieId)
         {
@@ -39,6 +43,7 @@ namespace MovieList.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpDelete("{movieId}")]
         public IActionResult DeleteMovieFromList(int movieId)
         {
@@ -47,6 +52,7 @@ namespace MovieList.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPut]
         public IActionResult Update(MovielistItemDTO model)
         {

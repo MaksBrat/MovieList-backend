@@ -25,6 +25,7 @@ namespace MovieList.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpPut]
         public IActionResult Edit(ProfileRequest profile)
         {          
@@ -33,6 +34,7 @@ namespace MovieList.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpPut("change-avatar")] 
         public async Task<IActionResult> ChangeAvatar(IFormFile avatar)
         {

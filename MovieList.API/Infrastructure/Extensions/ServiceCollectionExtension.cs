@@ -11,6 +11,7 @@ using MovieList.DAL.Repository;
 using MovieList.DAL.UnitOfWork;
 using MovieList.Domain.Configurations;
 using MovieList.Domain.Entity.Account;
+using MovieList.Hubs;
 using MovieList.Services;
 using MovieList.Services.Interfaces;
 using MovieList.Services.Services;
@@ -26,7 +27,7 @@ namespace MovieList.API.Infrastructure.Extensions
         }
 
         public static void AddCustomServices(this IServiceCollection services)
-        {
+        {   
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IJWTService, JWTService>();
             services.AddScoped<IProfileService, ProfileService>();
@@ -38,8 +39,10 @@ namespace MovieList.API.Infrastructure.Extensions
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IFileService, FileService>();
-            services.AddScoped<IChatHubService, ChatHubService>();
             services.AddScoped<ITmdbService, TmdbService>();
+
+            services.AddSingleton<IHubService, HubService>();
+            services.AddSingleton<MovieListHub>();
         }
 
         public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
@@ -97,6 +100,7 @@ namespace MovieList.API.Infrastructure.Extensions
 
             // SignalR
             services.AddSignalR();
+
 
             // Logging
             services.AddLogging();

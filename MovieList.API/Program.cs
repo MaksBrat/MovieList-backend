@@ -48,6 +48,6 @@ app.UseSwaggerUI(c =>
 
 app.MapControllers();
 
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<MovieListHub>("/hub");
 
 app.Run();
