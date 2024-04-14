@@ -1,9 +1,5 @@
-using MovieList.DAL;
 using MovieList.Hubs;
 using MovieList.API.Infrastructure.Extensions;
-using MovieList.Core.Services;
-using MovieList.Core.Interfaces;
-using MovieList.API.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

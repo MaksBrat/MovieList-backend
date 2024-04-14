@@ -1,12 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using MovieList.Domain.Pagination;
 
 namespace MovieList.DAL.Interfaces
@@ -45,6 +38,12 @@ namespace MovieList.DAL.Interfaces
 
         Task<IList<TEntity>> GetAllAsync();
 
+        Task<IList<TResult>> GetAllAsync<TResult>(
+            Expression<Func<TEntity, TResult>> selector,
+            Expression<Func<TEntity, bool>>? predicate = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null);
+
         Task<IList<TEntity>> GetAllAsync(
             Expression<Func<TEntity, bool>>? predicate = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
@@ -81,6 +80,7 @@ namespace MovieList.DAL.Interfaces
         #region Update
 
         void Update(TEntity entity);
+        public void UpdateRange(IEnumerable<TEntity> entities);
 
         #endregion
 

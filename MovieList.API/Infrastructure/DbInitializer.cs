@@ -2,12 +2,16 @@
 using MovieList.Domain.Entity.Movies;
 using MovieList.Domain.Entity.Genres;
 using MovieList.Core.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using MovieList.Domain.Entity.Account;
+using MovieList.Domain.DTO.Account;
+using MovieList.Services.Interfaces;
 
 namespace MovieList.API.Infrastructure
 {
     public class DbInitializer
     {
-        public async static Task Initialize(ApplicationDbContext context, ITmdbService tmdbService)
+        public async static Task Initialize(ApplicationDbContext context, IAccountService accountService, RoleManager<ApplicationRole> roleManager, ITmdbService tmdbService)
         {
             context.Database.EnsureCreated();
 
@@ -1207,6 +1211,55 @@ namespace MovieList.API.Infrastructure
             context.SaveChanges();
 
             #endregion MovieGenre
+
+
+            #region Account
+
+            var registerModels = new List<RegisterRequest>
+            {
+                new RegisterRequest
+                {
+                    Email = "admin@gmail.com",
+                    Password = "Admin_12345",
+                    ConfirmPassword = "Admin_12345"
+                },
+                new RegisterRequest
+                {
+                    Email = "admin2@gmail.com",
+                    Password = "Admin_12345",
+                    ConfirmPassword = "Admin_12345"
+                },
+            };
+
+
+            var loginModels = new List<LoginRequest>
+            {
+                new LoginRequest
+                {
+                    Email = "admin@gmail.com",
+                    Password = "Admin_12345"
+                },
+                new LoginRequest
+                {
+                    Email = "admin2@gmail.com",
+                    Password = "Admin_12345"
+                },
+            };
+
+            await roleManager.CreateAsync(new ApplicationRole() { Name = "admin" });
+            await roleManager.CreateAsync(new ApplicationRole() { Name = "user" });
+
+            foreach(var model in registerModels)
+            {
+                await accountService.Register(model);
+            }
+
+            foreach (var model in loginModels)
+            {
+                await accountService.Login(model);
+            }
+
+            #endregion
         }
     }
 }

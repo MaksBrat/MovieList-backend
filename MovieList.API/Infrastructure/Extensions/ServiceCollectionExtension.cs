@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MovieList.BLL.HostedServices;
 using MovieList.Core.Interfaces;
 using MovieList.Core.Services;
 using MovieList.DAL;
@@ -43,6 +44,8 @@ namespace MovieList.API.Infrastructure.Extensions
 
             services.AddSingleton<IHubService, HubService>();
             services.AddSingleton<MovieListHub>();
+
+            services.AddHostedService<RatingUpdateHostedService>();
         }
 
         public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
@@ -100,7 +103,6 @@ namespace MovieList.API.Infrastructure.Extensions
 
             // SignalR
             services.AddSignalR();
-
 
             // Logging
             services.AddLogging();

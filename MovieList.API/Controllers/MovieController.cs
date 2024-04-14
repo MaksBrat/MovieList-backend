@@ -59,5 +59,13 @@ namespace MovieList.Controllers
 
             return Ok();
         }
+
+        [HttpPost("rating")]
+        public async Task<IActionResult> CalculateRating()
+        {
+            await _movieService.CalculateMovieRatingAsync();
+
+            return Ok();
+        }
     }
 }

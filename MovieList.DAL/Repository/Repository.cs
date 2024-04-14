@@ -22,7 +22,30 @@ namespace MovieList.DAL.Repository
 
         public async Task<IList<TEntity>> GetAllAsync() =>
             await _dbSet.ToListAsync();
-       
+
+        public async Task<IList<TResult>> GetAllAsync<TResult>(
+         Expression<Func<TEntity, TResult>> selector,
+         Expression<Func<TEntity, bool>>? predicate = null,
+         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            if (include is not null)
+            {
+                query = include(query);
+            }
+
+            if (predicate is not null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return orderBy is not null
+                ? await orderBy(query).Select(selector).ToListAsync()
+                : await query.Select(selector).ToListAsync();
+        }
+
         public async Task<IList<TEntity>> GetAllAsync(
             Expression<Func<TEntity, bool>>? predicate = null, 
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, 
@@ -175,7 +198,9 @@ namespace MovieList.DAL.Repository
         public void Insert(IEnumerable<TEntity> entities) => _dbSet.AddRange(entities);
 
         public void Update(TEntity entity) => _dbSet.Update(entity);
-        
+
+        public void UpdateRange(IEnumerable<TEntity> entities) => _dbSet.UpdateRange(entities);
+
         public void Delete(int id)
         {
             var entity = _dbSet.Find(id);

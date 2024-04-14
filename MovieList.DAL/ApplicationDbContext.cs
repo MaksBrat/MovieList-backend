@@ -87,16 +87,27 @@ namespace MovieList.DAL
                 builder.Property(x => x.Id).ValueGeneratedOnAdd();
             });
 
-            modelBuilder.Entity<News>()
+           /* modelBuilder.Entity<News>()
                 .HasMany(x => x.Comments)
                 .WithOne(x => x.News)
-                .HasForeignKey(x => x.NewsId);
+                .HasForeignKey(x => x.ContentId);
 
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.News)
                 .WithMany(n => n.Comments)
-                .HasForeignKey(c => c.NewsId)
+                .HasForeignKey(c => c.ContentId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Movie>()
+                .HasMany(x => x.Comments)
+                .WithOne(x => x.Movie)
+                .HasForeignKey(x => x.ContentId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Movie)
+                .WithMany(n => n.Comments)
+                .HasForeignKey(c => c.ContentId)
+                .OnDelete(DeleteBehavior.NoAction);*/
         }
     }
 }

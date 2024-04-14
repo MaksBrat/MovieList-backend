@@ -36,10 +36,10 @@ namespace MovieList.Services.Services
             return response;
         }
 
-        public async Task<List<CommentResponse>> GetAll(int newdId)
+        public async Task<List<CommentResponse>> GetAll(int contentId)
         {
             var comments = await _unitOfWork.GetRepository<Comment>().GetAllAsync(
-                predicate: x => x.NewsId == newdId,
+                predicate: x => x.ContentId == contentId,
                 include: i => i
                     .Include(x => x.Author.FileModel),
                 orderBy: x => x.OrderByDescending(x => x.DateCreated));
@@ -47,7 +47,7 @@ namespace MovieList.Services.Services
             if (comments == null)
             {
                 throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                    $"Comments for NewsId: {newdId} were not found.");
+                    $"Comments for contentId: {contentId} were not found.");
             }
 
             var response = _mapper.Map<List<CommentResponse>>(comments);

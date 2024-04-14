@@ -33,10 +33,10 @@ namespace MovieList.Controllers
             return Ok(response);
         }
 
-        [HttpGet("get-all-by-newsId/{newsId}")]
-        public async Task<IActionResult> getAll(int newsId)
+        [HttpGet("get-all-by-contentId/{contentId}")]
+        public async Task<IActionResult> getAll(int contentId)
         {
-            var response = await _commentService.GetAll(newsId);
+            var response = await _commentService.GetAll(contentId);
 
             return Ok(response);
         }

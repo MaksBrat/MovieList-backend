@@ -9,6 +9,7 @@ namespace MovieList.Services.Interfaces
         MovieDTO Get(int id);
         Task<List<MovieDTO>> GetAll(MovieFilterRequest filterRequest);
         Task EditAsync(MovieDTO model);
-        void Delete(int id);             
+        void Delete(int id);
+        Task CalculateMovieRatingAsync();
     }
 }

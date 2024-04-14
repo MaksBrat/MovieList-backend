@@ -1,4 +1,5 @@
-﻿using MovieList.Domain.Enums;
+﻿using MovieList.Domain.Entity.MovieNews;
+using MovieList.Domain.Enums;
 
 namespace MovieList.Domain.Entity.Movies
 {
@@ -18,5 +19,6 @@ namespace MovieList.Domain.Entity.Movies
         public string? PosterUrl { get; set; } 
         public string? TrailerUrl { get; set; } 
         public ICollection<MovieGenre> MovieGenres { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }  
 }

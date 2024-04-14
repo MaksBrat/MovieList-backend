@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieList.Domain.ResponseModels.Movie;
 using MovieList.Services.Exceptions;
 using MovieList.Core.Interfaces;
+using MovieList.Domain.Entity.MovieList;
 
 namespace MovieList.Services.Services
 {
@@ -125,6 +126,31 @@ namespace MovieList.Services.Services
             }
 
             _unitOfWork.GetRepository<Movie>().Delete(id);
+            _unitOfWork.SaveChanges();
+        }
+
+        public async Task CalculateMovieRatingAsync()
+        {
+            var movies = await _unitOfWork.GetRepository<Movie>().GetAllAsync();
+
+            var movieIds = movies.Select(movie => movie.Id).ToList();
+            var ratings = await _unitOfWork.GetRepository<MovieListItem>().GetAllAsync(
+                selector: x => new { x.MovieId, x.UserRating },
+                predicate: x => movieIds.Contains(x.MovieId) && x.UserRating != null);
+
+            var ratingsGroupedByMovie = ratings.GroupBy(r => r.MovieId)
+                                               .ToDictionary(g => g.Key, g => g.Select(r => r.UserRating));
+
+            foreach (var movie in movies)
+            {
+                if (ratingsGroupedByMovie.TryGetValue(movie.Id, out var movieRatings))
+                {
+                    var sumOfRatings = (float)movieRatings.Sum() / movieRatings.Count();
+                    movie.Rating = sumOfRatings;
+                }
+            }
+
+            _unitOfWork.GetRepository<Movie>().UpdateRange(movies);
             _unitOfWork.SaveChanges();
         }
     }

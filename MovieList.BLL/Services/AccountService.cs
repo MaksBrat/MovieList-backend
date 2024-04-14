@@ -174,11 +174,11 @@ namespace MovieList.Services.Services
                     $"User with Id: {user.Id} is blocked.");
             }
 
-            if (!await _userManager.IsEmailConfirmedAsync(user))
+/*            if (!await _userManager.IsEmailConfirmedAsync(user))
             {
                 throw new CustomizedResponseException((int)HttpStatusCode.UnprocessableEntity, ErrorIdConstans.UnprocessableEntity,
                     "Please confirm your email.");
-            }
+            }*/
 
             if (!await _userManager.CheckPasswordAsync(user, model.Password))
             {
