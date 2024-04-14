@@ -7,7 +7,6 @@ using MovieList.Domain.ResponseModels.Movie;
 
 namespace MovieList.Controllers
 {
-    [ApiController]
     public class MovieController : BaseController
     {   
         private readonly IMovieService _movieService;
@@ -56,14 +55,6 @@ namespace MovieList.Controllers
         public IActionResult Delete(int id)
         {
             _movieService.Delete(id);
-
-            return Ok();
-        }
-
-        [HttpPost("rating")]
-        public async Task<IActionResult> CalculateRating()
-        {
-            await _movieService.CalculateMovieRatingAsync();
 
             return Ok();
         }

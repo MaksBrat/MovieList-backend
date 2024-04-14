@@ -27,13 +27,12 @@ namespace MovieList.Services.Services
                 orderBy: x => x.OrderByDescending(x => x.DateCreated),
                 include: i => i.Include(x => x.Author.FileModel),
                 pageIndex: pageIndex,
-                pageSize: pageSize
-            );
+                pageSize: pageSize);
 
             if (messageList == null)
             {
                 throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                        $"Messages were not found.");
+                    $"Messages were not found.");
             }
 
             var response = _mapper.Map<List<MessageResponse>>(messageList.Items);
@@ -45,13 +44,12 @@ namespace MovieList.Services.Services
         {        
             var userProfile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
                 predicate: x => x.UserId == userId,
-                include: i => i
-                    .Include(x => x.FileModel));
+                include: i => i.Include(x => x.FileModel));
 
             if (userProfile == null)
             {
                 throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                        $"Profile with Id: {userId} was not found. Can`t create message");
+                    $"Profile with Id: {userId} was not found. Can`t create message");
             }
 
             var message = _mapper.Map<Message>(model);

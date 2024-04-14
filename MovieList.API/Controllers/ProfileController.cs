@@ -7,7 +7,6 @@ using MovieList.Domain.DTO.Profile;
 namespace MovieList.Controllers
 {
     [Authorize]
-    [ApiController]
     public class ProfileController : BaseController
     {
         private readonly IProfileService _profileService;

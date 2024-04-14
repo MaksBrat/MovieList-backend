@@ -97,9 +97,9 @@ namespace MovieList.Services.Services
 
                     await client.SendAsync(mailMessage);
                 }
-                catch
+                catch(Exception ex)
                 {
-                    //log an error message or throw an exception, or both.
+                    _logger.LogError(ex.Message);
                     throw;
                 }
                 finally

@@ -6,7 +6,6 @@ using MovieList.Services.Interfaces;
 
 namespace MovieList.Controllers
 {
-    [ApiController]
     public class MovieListController : BaseController
     {
         private readonly IMovieListService _movieListService;

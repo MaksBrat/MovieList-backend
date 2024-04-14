@@ -1,6 +1,5 @@
 ﻿using MovieList.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using MovieList.Domain.RequestModels.EntitiesFilters;
 using MovieList.Controllers.Base;
@@ -8,7 +7,6 @@ using MovieList.Domain.DTO.News;
 
 namespace MovieList.Controllers
 {
-    [ApiController]
     public class NewsController : BaseController
     {
         private readonly INewsService _newsService;

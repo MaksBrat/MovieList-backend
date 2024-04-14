@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieList.BLL.HostedServices;
+using MovieList.BLL.Interfaces;
+using MovieList.BLL.Services;
 using MovieList.Core.Interfaces;
 using MovieList.Core.Services;
 using MovieList.DAL;
@@ -41,6 +43,7 @@ namespace MovieList.API.Infrastructure.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<ITmdbService, TmdbService>();
+            services.AddScoped<IRatingService, RatingService>();
 
             services.AddSingleton<IHubService, HubService>();
             services.AddSingleton<MovieListHub>();

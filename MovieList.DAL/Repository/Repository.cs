@@ -18,6 +18,14 @@ namespace MovieList.DAL.Repository
             _dbSet = _dbContext.Set<TEntity>();
         }
 
+        #region GetById
+
+        public TEntity GetById(int id) => _dbSet.Find(id);
+
+        #endregion
+
+        #region GetAll
+
         public IList<TEntity> GetAll() => _dbSet.ToList();
 
         public async Task<IList<TEntity>> GetAllAsync() =>
@@ -77,29 +85,9 @@ namespace MovieList.DAL.Repository
             return await query.ToListAsync();
         }
 
-        public async Task<IPagedList<TEntity>> GetPagedListAsync(
-            Expression<Func<TEntity, bool>>? predicate = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
-            int pageIndex = 0,
-            int pageSize = 20)
-        {
-            IQueryable<TEntity> query = _dbSet;
-         
-            if (include is not null)
-            {
-                query = include(query);
-            }
+        #endregion
 
-            if (predicate is not null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return orderBy is not null
-                ? await orderBy(query).ToPagedListAsync(pageIndex, pageSize)
-                : await query.ToPagedListAsync(pageIndex, pageSize);
-        }
+        #region GetFirstOrDefault
 
         public TEntity? GetFirstOrDefault(
             Expression<Func<TEntity, bool>>? predicate = null,
@@ -191,16 +179,72 @@ namespace MovieList.DAL.Repository
                 : await query.Select(selector).FirstOrDefaultAsync();
         }
 
-        public TEntity GetById(int id) => _dbSet.Find(id);
+        #endregion
+
+        #region PagedList
+
+        public async Task<IPagedList<TEntity>> GetPagedListAsync(
+            Expression<Func<TEntity, bool>>? predicate = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+            int pageIndex = 0,
+            int pageSize = 20)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            if (include is not null)
+            {
+                query = include(query);
+            }
+
+            if (predicate is not null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return orderBy is not null
+                ? await orderBy(query).ToPagedListAsync(pageIndex, pageSize)
+                : await query.ToPagedListAsync(pageIndex, pageSize);
+        }
+
+        #endregion
+
+        #region GroupBy
+
+        public IEnumerable<TResult> GetGrouped<TKey, TResult>(
+            Expression<Func<TEntity, TKey>> groupingKey,
+            Expression<Func<IGrouping<TKey, TEntity>, TResult>> resultSelector,
+            Expression<Func<TEntity, bool>>? predicate = null)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return query.GroupBy(groupingKey).Select(resultSelector);
+        }
+
+        #endregion
+
+        #region Insert
 
         public TEntity Insert(TEntity entity) => _dbSet.Add(entity).Entity;
 
         public void Insert(IEnumerable<TEntity> entities) => _dbSet.AddRange(entities);
 
+        #endregion
+
+        #region Update
+
         public void Update(TEntity entity) => _dbSet.Update(entity);
 
         public void UpdateRange(IEnumerable<TEntity> entities) => _dbSet.UpdateRange(entities);
 
+        #endregion
+
+        #region Delete
         public void Delete(int id)
         {
             var entity = _dbSet.Find(id);
@@ -213,6 +257,8 @@ namespace MovieList.DAL.Repository
         public void Delete(TEntity entity) => _dbSet.Remove(entity);
 
         public void DeleteRange(List<TEntity> entities) => _dbSet.RemoveRange(entities);
+
+        #endregion
 
         #region Aggregations
 

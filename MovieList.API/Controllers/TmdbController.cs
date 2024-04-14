@@ -5,8 +5,6 @@ using MovieList.Domain.Enums;
 
 namespace MovieList.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class TmdbController : BaseController
     {
         private readonly ITmdbService _tmdbService;

@@ -7,7 +7,6 @@ using MovieList.Services.Interfaces;
 
 namespace MovieList.Controllers
 {
-    [ApiController]
     public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;

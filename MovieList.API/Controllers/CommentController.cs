@@ -6,7 +6,6 @@ using MovieList.Domain.DTO.News.Comment;
 
 namespace MovieList.Controllers
 {
-    [ApiController]
     public class CommentController : BaseController
     {
         private readonly ICommentService _commentService;

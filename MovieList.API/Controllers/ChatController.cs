@@ -7,7 +7,6 @@ using MovieList.Hubs;
 
 namespace MovieList.Controllers
 {
-    [ApiController]
     public class ChatController : BaseController
     {
         private readonly IMessageService _messageService;

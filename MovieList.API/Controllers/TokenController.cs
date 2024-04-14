@@ -5,7 +5,6 @@ using MovieList.Domain.DTO.Account;
 
 namespace MovieList.Controllers
 {
-    [ApiController]
     public class TokenController : BaseController
     {
         private readonly IJWTService _jwtService;

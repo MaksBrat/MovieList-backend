@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MovieList.Services.Interfaces;
+using MovieList.BLL.Interfaces;
 
 namespace MovieList.BLL.HostedServices
 {
@@ -28,19 +28,19 @@ namespace MovieList.BLL.HostedServices
                 timeUntil3AM = timeUntil3AM.Add(TimeSpan.FromDays(1));
             }
 
-            _timer = new Timer(CalculateMovieRatingAsync, null, timeUntil3AM, TimeSpan.FromDays(1));
+            _timer = new Timer(UpdateMoviesRatingAsync, null, timeUntil3AM, TimeSpan.FromDays(1));
 
             return Task.CompletedTask;
         }
 
-        private void CalculateMovieRatingAsync(object state)
+        private void UpdateMoviesRatingAsync(object state)
         {
             _logger.LogInformation("Started updating movie ratings");
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var movieService = scope.ServiceProvider.GetRequiredService<IMovieService>();
-                movieService.CalculateMovieRatingAsync();
+                var ratingService = scope.ServiceProvider.GetRequiredService<IRatingService>();
+                ratingService.UpdateMoviesRatingAsync();
             }
 
             _logger.LogInformation("Movie ratings successfully updated");

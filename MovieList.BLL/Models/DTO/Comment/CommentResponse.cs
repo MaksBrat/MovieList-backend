@@ -7,7 +7,7 @@
         public string Author { get; set; }
         public int AuthorId { get; set; }
         public string AvatarUrl { get; set; }
-        public int NewsId { get; set; }
+        public int ContentId { get; set; }
         public string DateCreated { get; set; }
     }
 }

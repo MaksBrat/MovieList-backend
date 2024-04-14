@@ -6,6 +6,12 @@ namespace MovieList.DAL.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : class
     {
+        #region GetById
+
+        public TEntity GetById(int id);
+
+        #endregion
+
         #region GetFirstOrDefault
 
         TEntity? GetFirstOrDefault(
@@ -63,9 +69,12 @@ namespace MovieList.DAL.Interfaces
 
         #endregion
 
-        #region Get
+        #region GroupBy
 
-        public TEntity GetById(int id);
+        public IEnumerable<TResult> GetGrouped<TKey, TResult>(
+           Expression<Func<TEntity, TKey>> groupingKey,
+           Expression<Func<IGrouping<TKey, TEntity>, TResult>> resultSelector,
+           Expression<Func<TEntity, bool>>? predicate = null);
 
         #endregion
 
