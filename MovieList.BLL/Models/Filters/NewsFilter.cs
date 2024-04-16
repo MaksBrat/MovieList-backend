@@ -5,7 +5,7 @@ namespace MovieList.Common.EntitiesFilters
 {
     public class NewsFilter : BaseFilter<News> 
     {
-        public override void CreateFilter()
+        public override void ApplyFilter()
         {
             ApplySearchQueryFilter(nameof(News.Title));
         

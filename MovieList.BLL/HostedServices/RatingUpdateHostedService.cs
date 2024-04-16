@@ -28,19 +28,19 @@ namespace MovieList.BLL.HostedServices
                 timeUntil3AM = timeUntil3AM.Add(TimeSpan.FromDays(1));
             }
 
-            _timer = new Timer(UpdateMoviesRatingAsync, null, timeUntil3AM, TimeSpan.FromDays(1));
+            _timer = new Timer(async _ => await UpdateMoviesRatingAsync(), null, TimeSpan.Zero, TimeSpan.FromDays(1));
 
             return Task.CompletedTask;
         }
 
-        private void UpdateMoviesRatingAsync(object state)
+        private async Task UpdateMoviesRatingAsync()
         {
             _logger.LogInformation("Started updating movie ratings");
 
             using (var scope = _serviceProvider.CreateScope())
             {
                 var ratingService = scope.ServiceProvider.GetRequiredService<IRatingService>();
-                ratingService.UpdateMoviesRatingAsync();
+                await ratingService.UpdateMoviesRatingAsync();
             }
 
             _logger.LogInformation("Movie ratings successfully updated");

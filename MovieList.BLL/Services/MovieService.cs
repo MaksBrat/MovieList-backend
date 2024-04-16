@@ -47,7 +47,7 @@ namespace MovieList.Services.Services
         {
             var filter = _mapper.Map<MovieFilter>(filterRequest);
 
-            filter.CreateFilter();
+            filter.ApplyFilter();
 
             var moviesPagedList = await _unitOfWork.GetRepository<Movie>().GetPagedListAsync(
                 predicate: filter.Predicate,

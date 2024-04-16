@@ -1,6 +1,4 @@
-﻿using MovieList.Domain.RequestModels.EntitiesFilters.Base;
-
-namespace MovieList.Domain.RequestModels.EntitiesFilters
+﻿namespace MovieList.BLL.Models.DTO.Filters
 {
     public class GenreFilterRequest
     {

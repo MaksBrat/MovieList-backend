@@ -64,7 +64,7 @@ namespace MovieList.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("block-user")]
         public async Task<IActionResult> BlockUser([FromQuery] string userId)
         {

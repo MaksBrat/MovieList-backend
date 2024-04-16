@@ -1,7 +1,7 @@
-﻿using MovieList.Common.EntitiesFilters.Abstract;
+﻿using MovieList.BLL.Models.DTO.Filters;
+using MovieList.Common.EntitiesFilters.Abstract;
 using MovieList.Domain.Entity.Movies;
 using MovieList.Domain.Enums;
-using MovieList.Domain.RequestModels.EntitiesFilters;
 using MovieList.Services.Extentions;
 using System.Linq.Expressions;
 
@@ -13,7 +13,7 @@ namespace MovieList.Common.EntitiesFilters
         public string? MovieType { get; set; }
         public string? MovieStatus { get; set; }
         
-        public override void CreateFilter()
+        public override void ApplyFilter()
         {
             ApplySearchQueryFilter(nameof(Movie.Title));
             ApplyEnumFilter<MovieType>(MovieType, nameof(Movie.MovieType));

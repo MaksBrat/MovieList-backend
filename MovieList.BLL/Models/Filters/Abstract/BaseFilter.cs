@@ -14,7 +14,7 @@ namespace MovieList.Common.EntitiesFilters.Abstract
         public Expression<Func<T, bool>>? Predicate { get; set; } = null;
         public Func<IQueryable<T>, IOrderedQueryable<T>>? OrderByQuery { get; set; } = null;
 
-        public abstract void CreateFilter();
+        public abstract void ApplyFilter();
 
         protected void ApplySearchQueryFilter(string propertyName)
         {   

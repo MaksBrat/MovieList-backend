@@ -1,4 +1,5 @@
-﻿using MovieList.Domain.RequestModels.EntitiesFilters.Base;
+﻿using MovieList.BLL.Models.DTO.Filters;
+using MovieList.Domain.RequestModels.EntitiesFilters.Base;
 
 namespace MovieList.Domain.RequestModels.EntitiesFilters
 {

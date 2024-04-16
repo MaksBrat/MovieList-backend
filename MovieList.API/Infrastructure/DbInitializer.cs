@@ -1246,8 +1246,8 @@ namespace MovieList.API.Infrastructure
                 },
             };
 
-            await roleManager.CreateAsync(new ApplicationRole() { Name = "admin" });
-            await roleManager.CreateAsync(new ApplicationRole() { Name = "user" });
+            await roleManager.CreateAsync(new ApplicationRole() { Name = "Admin" });
+            await roleManager.CreateAsync(new ApplicationRole() { Name = "User" });
 
             foreach(var model in registerModels)
             {

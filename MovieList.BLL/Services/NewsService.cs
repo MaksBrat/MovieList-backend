@@ -44,7 +44,7 @@ namespace MovieList.Services.Services
         {
             var filter = _mapper.Map<NewsFilter>(filterRequest);
 
-            filter.CreateFilter();
+            filter.ApplyFilter();
 
             var news = await _unitOfWork.GetRepository<News>().GetAllAsync(
                 predicate: filter.Predicate,

@@ -2,22 +2,28 @@
 using MovieList.Domain.DTO.Tmdb;
 using MovieList.Services.Exceptions.Base;
 using MovieList.Services.Exceptions;
-using Newtonsoft.Json;
 using RestSharp;
 using System.Net;
 using MovieList.Domain.Enums;
+using Microsoft.Extensions.Configuration;
+using MovieList.BLL.Utilities;
 
 namespace MovieList.Core.Services
 {
     public class TmdbService : ITmdbService
     {
         private readonly RestClient _client;
-        private readonly string _apiKey; // TODO: take from config
+        private readonly IConfiguration _configuration;
+        
+        private readonly string _apiKey;
+        private const string API_ROUTE = "https://api.themoviedb.org/3";
 
-        public TmdbService()
+        public TmdbService(IConfiguration configuration)
         {
-            _client = new RestClient("https://api.themoviedb.org/3");
-            _apiKey = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNTU4NWQxN2U2MjY0MTc5MDY1MWZkMDRlM2UzMzU3NyIsInN1YiI6IjY2MGM1NWNiOTVjZTI0MDE3ZDZlMjNhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4xrdtXTwE5JBfJX0esvbWfCNTxnilRUnELWyn6SCjdQ";
+            _client = new RestClient(API_ROUTE);
+            _configuration = configuration;
+
+            _apiKey = _configuration["Tmdb:ApiKey"];
         }
 
         public async Task<TmdbMovieResponse> GetMediaAsync(MovieType type, string query)
@@ -49,27 +55,13 @@ namespace MovieList.Core.Services
 
             if (response.IsSuccessful && response.Content != null)
             {
-                return Deserialize(response.Content);
+                return Deserializer.Deserialize<TmdbMovieResponse>(response.Content);
             }
             else
             {
                 throw new CustomizedResponseException((int)HttpStatusCode.InternalServerError, ErrorIdConstans.InternalServerError,
                     "Failed to fetch data from TMDB API.");
             }
-        }
-
-        // TODO: generic ?
-        private TmdbMovieResponse Deserialize(string content)
-        {
-            var response = JsonConvert.DeserializeObject<TmdbMovieResponse>(content);
-
-            if (response == null)
-            {
-                throw new CustomizedResponseException((int)HttpStatusCode.InternalServerError, ErrorIdConstans.InternalServerError,
-                    "Failed to deserialize media from TMDB API.");
-            }
-
-            return response;
         }
     }
 }
