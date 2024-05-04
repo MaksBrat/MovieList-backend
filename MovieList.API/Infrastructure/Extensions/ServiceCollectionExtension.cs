@@ -109,6 +109,18 @@ namespace MovieList.API.Infrastructure.Extensions
 
             // Logging
             services.AddLogging();
+
+
+            //Cors
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularClient",
+                   builder => builder
+                   .WithOrigins("http://localhost:4200")
+                   .WithOrigins("https://maksbrat.github.io")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader());
+            });
         }
 
         public static void AddSwaggerServices(this IServiceCollection services)

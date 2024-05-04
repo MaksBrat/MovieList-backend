@@ -41,7 +41,7 @@ namespace MovieList.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public async Task<IActionResult> EditAsync(MovieDTO model)
         {

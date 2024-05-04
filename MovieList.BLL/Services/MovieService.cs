@@ -38,9 +38,7 @@ namespace MovieList.Services.Services
                     $"Movie with id: {id} was not found.");
             }
 
-            var response = _mapper.Map<MovieDTO>(movie);
-
-            return response;
+            return _mapper.Map<MovieDTO>(movie);
         }
 
         public async Task<List<MovieDTO>> GetAll(MovieFilterRequest filterRequest)
@@ -64,12 +62,9 @@ namespace MovieList.Services.Services
                     $"Movies were not found.");
             }
 
-            var response = _mapper.Map<List<MovieDTO>>(moviesPagedList.Items);
-
-            return response;
+            return _mapper.Map<List<MovieDTO>>(moviesPagedList.Items);
         }
 
-        // TODO: return id?
         public async Task Create(MovieDTO model)
         {
             var movie = _mapper.Map<Movie>(model);
@@ -89,20 +84,12 @@ namespace MovieList.Services.Services
         {
             var movie = await _unitOfWork.GetRepository<Movie>().GetFirstOrDefaultAsync(
                 predicate: x => x.Id == model.Id,
-                include: i => i
-                        .Include(x => x.MovieGenres)
-                            .ThenInclude(x => x.Genre));
+                include: i => i.Include(x => x.MovieGenres));
 
             if (movie == null)
             {
                 throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
                    $"Movie with id: {model.Id} was not found.");
-            }
-
-            foreach (var movieGenre in movie.MovieGenres)
-            {
-                movieGenre.Movie = null;
-                movieGenre.Genre = null;
             }
 
             _unitOfWork.GetRepository<MovieGenre>().DeleteRange(movie.MovieGenres.ToList());
@@ -116,7 +103,7 @@ namespace MovieList.Services.Services
         public void Delete(int id)
         {
             var movie = _unitOfWork.GetRepository<Movie>().GetFirstOrDefault(
-               predicate: x => x.Id == id);
+                predicate: x => x.Id == id);
 
             if (movie == null)
             {

@@ -35,9 +35,7 @@ namespace MovieList.Services.Services
                     $"Messages were not found.");
             }
 
-            var response = _mapper.Map<List<MessageResponse>>(messageList.Items);
-
-            return response;
+            return _mapper.Map<List<MessageResponse>>(messageList.Items);
         }
 
         public MessageResponse Create(MessageRequest model, int userId)

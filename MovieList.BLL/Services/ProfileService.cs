@@ -42,9 +42,7 @@ namespace MovieList.Services.Services
                      $"Profile with Id: {userId} was not found.");
             }
 
-            var response = _mapper.Map<ProfileResponse>(userProfile);
-
-            return response;
+            return _mapper.Map<ProfileResponse>(userProfile);
         }
 
         public async Task<ProfileResponse> Create(ApplicationUser user)
@@ -69,17 +67,13 @@ namespace MovieList.Services.Services
             _unitOfWork.GetRepository<UserProfile>().Insert(userProfile);
             _unitOfWork.SaveChanges();
 
-            var response = _mapper.Map<ProfileResponse>(userProfile);
-
-            return response;
+            return _mapper.Map<ProfileResponse>(userProfile);
         }
 
         public ProfileResponse Edit(ProfileRequest model, int userId)
         {
             var userProfile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
-                predicate: x => x.UserId == userId,
-                include: i => i
-                    .Include(x => x.FileModel));
+                predicate: x => x.UserId == userId);
 
             if (userProfile == null)
             {
@@ -92,9 +86,7 @@ namespace MovieList.Services.Services
             _unitOfWork.GetRepository<UserProfile>().Update(userProfile);
             _unitOfWork.SaveChanges();
 
-            var response = _mapper.Map<ProfileResponse>(userProfile);
-
-            return response;         
+            return _mapper.Map<ProfileResponse>(userProfile);
         }
 
         public async Task<ProfileResponse> ChangeAvatar(IFormFile avatar, int userId)
@@ -128,9 +120,7 @@ namespace MovieList.Services.Services
             _unitOfWork.GetRepository<FileModel>().Update(userProfile.FileModel);
             _unitOfWork.SaveChanges();
 
-            var response = _mapper.Map<ProfileResponse>(userProfile);
-
-            return response;   
+            return _mapper.Map<ProfileResponse>(userProfile);
         }
     }
 }

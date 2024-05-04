@@ -11,8 +11,16 @@ namespace MovieList.API.Infrastructure
 {
     public class DbInitializer
     {
-        public async static Task Initialize(ApplicationDbContext context, IAccountService accountService, RoleManager<ApplicationRole> roleManager, ITmdbService tmdbService)
+        public async static Task Seed(IApplicationBuilder applicationBuilder)
         {
+
+            using var serviceScope = applicationBuilder.ApplicationServices.CreateScope();
+
+            var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var accountService = serviceScope.ServiceProvider.GetRequiredService<IAccountService>();
+            var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+            var tmdbService = serviceScope.ServiceProvider.GetRequiredService<ITmdbService>();
+
             context.Database.EnsureCreated();
 
             if (context.Movies.Any())
@@ -584,12 +592,11 @@ namespace MovieList.API.Infrastructure
 
                 movie.TmdbId = tmdbMovie?.Id;
                 movie.TmdbRating = tmdbMovie?.VoteAverage;
-                movie.Description = tmdbMovie?.Overview;
-
-                context.Movies.Add(movie);
+                movie.Description = tmdbMovie?.Overview;                
             }
 
-            context.SaveChanges();
+            await context.Movies.AddRangeAsync(movies);
+            await context.SaveChangesAsync();
 
             #endregion Movie
 
@@ -615,12 +622,8 @@ namespace MovieList.API.Infrastructure
                 new Genre{ Name = "Documentary" },
             };
 
-            foreach (Genre genre in genres)
-            {
-                context.Genres.Add(genre);
-            }
-
-            context.SaveChanges();
+            await context.Genres.AddRangeAsync(genres);
+            await context.SaveChangesAsync();
 
             #endregion Genres
 
@@ -1212,7 +1215,6 @@ namespace MovieList.API.Infrastructure
 
             #endregion MovieGenre
 
-
             #region Account
 
             var registerModels = new List<RegisterRequest>
@@ -1230,7 +1232,6 @@ namespace MovieList.API.Infrastructure
                     ConfirmPassword = "Admin_12345"
                 },
             };
-
 
             var loginModels = new List<LoginRequest>
             {

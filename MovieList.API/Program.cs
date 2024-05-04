@@ -1,5 +1,6 @@
 using MovieList.Hubs;
 using MovieList.API.Infrastructure.Extensions;
+using MovieList.API.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,19 +11,7 @@ builder.Services.AddSwaggerServices();
 builder.Services.AddMvc();
 builder.Services.AddControllers();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngularClient",
-       builder => builder
-       .WithOrigins("http://localhost:4200")
-       .WithOrigins("https://maksbrat.github.io")
-       .AllowAnyMethod()
-       .AllowAnyHeader());
-});
-
 var app = builder.Build();
-
-await AppInitializer.InitializeAsync(app.Services);
 
 app.ConfigureCustomExceptionMiddleware();
 
@@ -45,5 +34,7 @@ app.UseSwaggerUI(c =>
 app.MapControllers();
 
 app.MapHub<MovieListHub>("/hub");
+
+await DbInitializer.Seed(app);
 
 app.Run();

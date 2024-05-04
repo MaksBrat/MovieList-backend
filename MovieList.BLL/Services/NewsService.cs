@@ -35,9 +35,7 @@ namespace MovieList.Services.Services
                     $"News with id: {id} was not found.");
             }
 
-            var response = _mapper.Map<NewsResponse>(news);
-
-            return response;
+            return _mapper.Map<NewsResponse>(news); ;
         }
 
         public async Task<List<NewsResponse>> GetAll(NewsFilterRequest filterRequest)
@@ -56,20 +54,16 @@ namespace MovieList.Services.Services
             if (news == null)
             {
                 throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                       $"News were not found.");
+                    $"News were not found.");
             }
 
-            var response = _mapper.Map<List<NewsResponse>>(news);
-
-            return response;
+            return _mapper.Map<List<NewsResponse>>(news);
         }
 
         public NewsResponse Create(NewsRequest model, int userId)
         {
             var userProfile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
-                    predicate: x => x.UserId == userId,
-                    include: i => i
-                        .Include(x => x.FileModel));
+                    predicate: x => x.UserId == userId);
 
             if (userProfile == null)
             {
@@ -82,12 +76,8 @@ namespace MovieList.Services.Services
 
             _unitOfWork.GetRepository<News>().Insert(news);
             _unitOfWork.SaveChanges();
-             
-            var response = _mapper.Map<NewsResponse>(news);
-            response.Author = userProfile.Name;
-            response.AvatarUrl = userProfile.FileModel.Path;
 
-            return response;
+            return _mapper.Map<NewsResponse>(news);
         }    
 
         public NewsResponse Edit(NewsRequest model)
@@ -106,9 +96,7 @@ namespace MovieList.Services.Services
             _unitOfWork.GetRepository<News>().Update(news);
             _unitOfWork.SaveChanges();
 
-            var response = _mapper.Map<NewsResponse>(news);
-
-            return response;
+            return _mapper.Map<NewsResponse>(news);
         }    
         
         public void Delete(int id)

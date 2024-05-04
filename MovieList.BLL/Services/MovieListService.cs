@@ -35,9 +35,7 @@ namespace MovieList.Services.Services
                     $"Movie list for user with id: {userId} was not found.");
             }
 
-            var movieListResponse = _mapper.Map<List<MovielistItemDTO>>(movieList);
-
-            return movieListResponse;
+            return _mapper.Map<List<MovielistItemDTO>>(movieList);
         }
 
         public async Task<bool> IsMovieInUserList(int movieId, int userId)

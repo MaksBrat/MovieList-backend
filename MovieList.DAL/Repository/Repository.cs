@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 using MovieList.Domain.Pagination;
 using MovieList.Common.Extensions;
+using Microsoft.Xrm.Sdk;
 
 namespace MovieList.DAL.Repository
 {
@@ -26,10 +27,10 @@ namespace MovieList.DAL.Repository
 
         #region GetAll
 
-        public IList<TEntity> GetAll() => _dbSet.ToList();
+        public IList<TEntity> GetAll() => _dbSet.AsNoTracking().ToList();
 
         public async Task<IList<TEntity>> GetAllAsync() =>
-            await _dbSet.ToListAsync();
+            await _dbSet.AsNoTracking().ToListAsync();
 
         public async Task<IList<TResult>> GetAllAsync<TResult>(
          Expression<Func<TEntity, TResult>> selector,
@@ -37,7 +38,7 @@ namespace MovieList.DAL.Repository
          Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
          Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             if (include is not null)
             {
@@ -60,7 +61,7 @@ namespace MovieList.DAL.Repository
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
             int take = 0)
         {
-            IQueryable<TEntity> query = _dbSet;       
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();       
 
             if (include is not null)
             {
@@ -94,7 +95,7 @@ namespace MovieList.DAL.Repository
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             if (include is not null)
             {
@@ -116,7 +117,7 @@ namespace MovieList.DAL.Repository
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, 
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             if (include is not null)
             {
@@ -139,7 +140,7 @@ namespace MovieList.DAL.Repository
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             if (include is not null)
             {
@@ -162,7 +163,7 @@ namespace MovieList.DAL.Repository
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             if (include is not null)
             {
@@ -190,7 +191,7 @@ namespace MovieList.DAL.Repository
             int pageIndex = 0,
             int pageSize = 20)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             if (include is not null)
             {
@@ -216,7 +217,7 @@ namespace MovieList.DAL.Repository
             Expression<Func<IGrouping<TKey, TEntity>, TResult>> resultSelector,
             Expression<Func<TEntity, bool>>? predicate = null)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             if (predicate != null)
             {

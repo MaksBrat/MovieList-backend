@@ -63,7 +63,6 @@ namespace MovieList.Services.Services
 
             await SendConfirmationEmail(user);
 
-            // TODO: return and store user profile in lc or cashe
             await _profileService.Create(user);
 
             transactionScope.Complete();
@@ -75,9 +74,7 @@ namespace MovieList.Services.Services
 
             await CheckUserLoginAvailabilityAsync(user, model);
 
-            var response = await _jwtService.BuildAuthenticatedResponse(user);
-
-            return response;
+            return await _jwtService.BuildAuthenticatedResponse(user);
         }
 
         public async Task Logout(string userName)
@@ -101,7 +98,7 @@ namespace MovieList.Services.Services
 
             if (!result.Succeeded)
             {
-                throw new CustomizedResponseException((int)HttpStatusCode.InternalServerError, ErrorIdConstans.FailedToInsert,
+                throw new CustomizedResponseException((int)HttpStatusCode.InternalServerError, ErrorIdConstans.InternalServerError,
                     $"Can't add role with name: {name}");
             }
         }
@@ -165,13 +162,13 @@ namespace MovieList.Services.Services
             if (user == null)
             {
                 throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                    $"User with Id: {user.Id} was not found.");
+                    "User was not found.");
             }
 
             if (user.IsBlocked)
             {
-                throw new RecordNotFoundException(ErrorIdConstans.RecordNotFound,
-                    $"User with Id: {user.Id} is blocked.");
+                throw new CustomizedResponseException((int)HttpStatusCode.UnprocessableEntity, ErrorIdConstans.UnprocessableEntity,
+                    $"User with Id: {user.Id} is blocked.");                   
             }
 
 /*            if (!await _userManager.IsEmailConfirmedAsync(user))

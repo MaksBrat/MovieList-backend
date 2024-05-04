@@ -31,9 +31,7 @@ namespace MovieList.Services.Services
                     $"Comment with Id: {id} was not found.");
             }
 
-            var response = _mapper.Map<CommentResponse>(comment);
-
-            return response;
+            return _mapper.Map<CommentResponse>(comment);
         }
 
         public async Task<List<CommentResponse>> GetAll(int contentId)
@@ -50,17 +48,13 @@ namespace MovieList.Services.Services
                     $"Comments for contentId: {contentId} were not found.");
             }
 
-            var response = _mapper.Map<List<CommentResponse>>(comments);
-
-            return response;
+            return _mapper.Map<List<CommentResponse>>(comments);
         }
 
         public CommentResponse Create(CommentRequest model, int userId)
         {
             var userProfile = _unitOfWork.GetRepository<UserProfile>().GetFirstOrDefault(
-                predicate: x => x.UserId == userId,
-                include: i => i
-                    .Include(x => x.FileModel));
+                predicate: x => x.UserId == userId);
 
             if (userProfile == null)
             {
@@ -74,11 +68,7 @@ namespace MovieList.Services.Services
             _unitOfWork.GetRepository<Comment>().Insert(comment);
             _unitOfWork.SaveChanges();
 
-            var response = _mapper.Map<CommentResponse>(comment);
-            response.Author = userProfile.Name;
-            response.AvatarUrl = userProfile.FileModel.Path;
-
-            return response;
+            return _mapper.Map<CommentResponse>(comment);
         }
 
         public CommentResponse Edit(CommentRequest model)
@@ -97,9 +87,7 @@ namespace MovieList.Services.Services
             _unitOfWork.GetRepository<Comment>().Update(comment);
             _unitOfWork.SaveChanges();
 
-            var response = _mapper.Map<CommentResponse>(comment);
-
-            return response;
+            return _mapper.Map<CommentResponse>(comment);
         }      
 
         public void Delete(int id)
