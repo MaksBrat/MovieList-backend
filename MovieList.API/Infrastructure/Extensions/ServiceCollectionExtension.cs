@@ -110,7 +110,6 @@ namespace MovieList.API.Infrastructure.Extensions
             // Logging
             services.AddLogging();
 
-
             //Cors
             services.AddCors(options =>
             {
