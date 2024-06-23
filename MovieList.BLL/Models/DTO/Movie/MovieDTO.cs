@@ -1,4 +1,5 @@
 ﻿using MovieList.Domain.ResponseModels.Genre;
+using System.ComponentModel.DataAnnotations;
 
 namespace MovieList.Domain.ResponseModels.Movie
 {
@@ -6,6 +7,8 @@ namespace MovieList.Domain.ResponseModels.Movie
     {
         public int Id { get; set; }
         public int? TmdbId { get; set; }
+
+        [Required]
         public string Title { get; set; }
         public string? Description { get; set; }
         public float Rating { get; set; }
